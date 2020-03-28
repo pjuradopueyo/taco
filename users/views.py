@@ -1,26 +1,55 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from rest_framework import viewsets
 from rest_framework import permissions
-from users.serializers import PetitionSerializer, ResponsePetitionSerializer
+from users.serializers import PetitionSerializer, ResponsePetitionSerializer, ProviderSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Petition, ResponsePetition
+from .models import Petition, ResponsePetition, Provider
+from .forms import ProviderForm
 from rest_framework import mixins
 from rest_framework import generics
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 
-#Web views
+#######################################################################
+#
+# Web views
+#
+#######################################################################
+
+#######################################################################
+# Home
+#######################################################################
 def index(request):
     latest_petition_list = Petition.objects.order_by('-start_date')[:5]
     context = {'latest_petition_list': latest_petition_list}
     return render(request, 'users/index.html', context)
+
+#######################################################################
+# Provider
+#######################################################################
+
+#
+# Detail - Read Only
+#
+def provider(request,provider_id):
+    provider = get_object_or_404(Provider, pk=provider_id)
+    context = {'provider': provider}
+    return render(request, 'users/provider.html', context)
+
+#
+# List - Read Only
+#
+def latest_provider_list(request):
+    latest_provider_list = Provider.objects.order_by('-name')[:50]
+    context = {'latest_provider_list': latest_provider_list}
+    return render(request, 'users/provider_list.html', context)
 
 # Social login
 class GoogleLogin(SocialLoginView):
@@ -107,3 +136,51 @@ class ResponsePetitionDetail(mixins.RetrieveModelMixin,
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
+# Create your views here. 
+def provider_image_view(request): 
+  
+    if request.method == 'POST': 
+        form = ProviderForm(request.POST, request.FILES) 
+  
+        if form.is_valid(): 
+            form.save() 
+            return redirect('success') 
+    else: 
+        form = ProviderForm() 
+    return render(request, 'users/provider_form.html', {'form' : form}) 
+  
+  
+def success(request): 
+    return HttpResponse('successfully uploaded') 
+
+#
+# Contribtions
+#
+# Provider views
+class ProviderList(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  generics.GenericAPIView):
+    queryset = Provider.objects.all()
+    serializer_class = ProviderSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+class ProviderDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    queryset = Provider.objects.all()
+    serializer_class = ProviderSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)

@@ -69,6 +69,10 @@ class Provider(models.Model):
     name = models.CharField(max_length=500)
     description = models.TextField(null=True, blank=True)
     url = models.CharField(max_length=500)
+    provider_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
+    start_date = models.DateField(default=datetime.now, blank=True)
+    def __str__(self):
+        return self.name
 
 class TagPetition(models.Model):
     petition = models.ForeignKey(Petition, on_delete=models.CASCADE)

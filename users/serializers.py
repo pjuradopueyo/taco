@@ -1,4 +1,4 @@
-from .models import Petition, ResponsePetition
+from .models import Petition, ResponsePetition, Provider
 from rest_framework import serializers
 
 
@@ -17,4 +17,12 @@ class ResponsePetitionSerializer(serializers.ModelSerializer):
         fields = ['id','content','petition','user']
     def create(self, validated_data):
         request = ResponsePetition.objects.create(**validated_data)
+        return request
+
+class ProviderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Provider
+        fields = ['id','user','desription','url','provider_main_img','start_date']
+    def create(self, validated_data):
+        request = Provider.objects.create(**validated_data)
         return request
