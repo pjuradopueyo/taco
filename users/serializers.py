@@ -2,15 +2,18 @@ from .models import Petition, ResponsePetition, Provider
 from rest_framework import serializers
 
 
-class PetitionSerializer(serializers.ModelSerializer):
 
+
+class PetitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Petition
         fields = "__all__"
+        read_only_fields = ['user']
     def create(self, validated_data):
         request = Petition.objects.create(**validated_data)
         return request
 
+        
 class ResponsePetitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsePetition
