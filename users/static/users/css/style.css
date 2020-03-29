@@ -1,7 +1,13 @@
-body {
-    background: white url("images/image.png") no-repeat;
+.img-petition {
+    vertical-align: middle;
+    width: 10em;
+    height: 10em;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: auto;
 }
-li {
-    color: green;
+
+.img-petition img {
+    width: 100%;
 }
 
