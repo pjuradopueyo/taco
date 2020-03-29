@@ -29,6 +29,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('provider/<int:provider_id>/', views.provider, name='provider'),
     path('providers/', views.latest_provider_list,name='latest_provider_list'),
+    path('ajax/providers/', views.ajax_provider_list,name='ajax_provider_list'),
     path('admin/', admin.site.urls),
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),

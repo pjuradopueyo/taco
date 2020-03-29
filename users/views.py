@@ -16,6 +16,7 @@ from rest_framework import generics
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
+from django.core.paginator import Paginator
 
 #######################################################################
 #
@@ -50,6 +51,29 @@ def latest_provider_list(request):
     latest_provider_list = Provider.objects.order_by('-name')[:50]
     context = {'latest_provider_list': latest_provider_list}
     return render(request, 'users/provider_list.html', context)
+
+######################################################################
+#
+# Ajax web
+#
+######################################################################
+
+#######################################################################
+# Provider
+#######################################################################
+
+#
+# List - Ajax 
+#
+def ajax_provider_list(request):
+    page_size = request.GET.get('page_size')
+    page_number = request.GET.get('page_number')
+    provider_full_list = Provider.objects.all().order_by('-name')
+    paginator = Paginator(provider_full_list, page_size) # Show 25 contacts per page
+
+    provider_list = paginator.get_page(page_number)
+    context = {'provider_list': provider_list}
+    return render(request, 'users/ajax_provider_list.html', context)
 
 # Social login
 class GoogleLogin(SocialLoginView):
