@@ -6,7 +6,7 @@ class PetitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Petition
-        fields = ['id','user','title','description','latitude','longitude','start_date','finish_date','radio','intensity']
+        fields = ['id','user','title','description','place','start_date','finish_date','radio','intensity','petition_img']
     def create(self, validated_data):
         request = Petition.objects.create(**validated_data)
         return request
