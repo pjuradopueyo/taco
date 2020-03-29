@@ -25,8 +25,7 @@ SECRET_KEY = 'e5p%=o-u$6o+3g6^+&cjbjpr(w@1&#r8qpcuv$h1o4v%g4m!l^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['51.195.136.201','tapeeta.com','taco.pedrojuradopueyo.com']
 
 # Application definition
 
