@@ -28,8 +28,10 @@ from django.core.paginator import Paginator
 # Home
 #######################################################################
 def index(request):
-    latest_petition_list = Petition.objects.order_by('-start_date')[:5]
-    context = {'latest_petition_list': latest_petition_list}
+    latest_petition_list = Petition.objects.order_by('-start_date')[:8]
+    latest_provider_list = Provider.objects.order_by('-start_date')[:6]
+    context = {'latest_petition_list': latest_petition_list,
+    'latest_provider_list': latest_provider_list}
     return render(request, 'users/index.html', context)
 
 #######################################################################
