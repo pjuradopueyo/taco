@@ -50,7 +50,8 @@ class Petition(models.Model):
     finish_date = models.DateField(null=True)
     radio = models.IntegerField(null=True)
     intensity = models.IntegerField()
-    petition_img = models.ImageField(upload_to='petition/',null=True, blank=True)
+    petition_img = models.ImageField(upload_to='petition/', null=True, blank=True)
+    added_to = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
     
     class Meta:
         ordering = ['start_date']
