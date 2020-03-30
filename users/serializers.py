@@ -1,4 +1,4 @@
-from .models import Petition, ResponsePetition, Provider
+from .models import Petition, ResponsePetition, Provider, Offer
 from rest_framework import serializers
 
 
@@ -11,6 +11,15 @@ class PetitionSerializer(serializers.ModelSerializer):
         read_only_fields = ['user']
     def create(self, validated_data):
         request = Petition.objects.create(**validated_data)
+        return request
+
+class OfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Offer
+        fields = "__all__"
+        read_only_fields = ['user']
+    def create(self, validated_data):
+        request = Offer.objects.create(**validated_data)
         return request
 
         

@@ -67,6 +67,7 @@ class Offer(models.Model):
     radio = models.IntegerField()
     intensity = models.IntegerField()
     offer_img = models.ImageField(upload_to='offer/',null=True, blank=True)
+    added_to = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
 
 
 class Category(models.Model):

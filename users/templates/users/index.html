@@ -7,11 +7,11 @@
             <div class="container h-100">
                 <div class="row h-100 align-items-center justify-content-center text-center">
                     <div class="col-lg-10 align-self-end">
-                        <h1 class="text-uppercase text-white font-weight-bold">Your Favorite Source of Free Bootstrap Themes</h1>
+                        <h1 class="text-uppercase text-white font-weight-bold">Helping heach others to help</h1>
                         <hr class="divider my-4" />
                     </div>
                     <div class="col-lg-8 align-self-baseline">
-                        <p class="text-white-75 font-weight-light mb-5">Start Bootstrap can help you build better websites using the Bootstrap framework! Just download a theme and start customizing, no strings attached!</p>
+                        <p class="text-white-75 font-weight-light mb-5">Help your community to keep alive, help to whom may need it, buy goods for others who cannot afford them or purchase coupons to redeem when your favourite places open again</p>
                         <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">Find Out More</a>
                     </div>
                 </div>
@@ -21,9 +21,10 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-8 text-center">
-                        <h2 class="text-white mt-0">We've got what you need!</h2>
+                        <h2 class="text-white mt-0">Ask if you need, give if you have</h2>
                         <hr class="divider light my-4" />
-                        <p class="text-white-50 mb-4">Start Bootstrap has everything you need to get your new website up and running in no time! Choose one of our open source, free to download, and easy to use themes! No strings attached!</p>
+                        <p class="text-white-50 mb-4">If you feel in need of anything, as some product in your supermarket, help with your elder relatives or you don't feel safe, you can create a public petition. Other will either join your petition or offer help.</p>
+                        <p class="text-white-50 mb-4">If you have something to offer, as your time, advice or just your availabilty, you can create an public offer so others can ask for your help, or you can browse within the petitions and answer to any of them.</p>
                         <a class="btn btn-light btn-xl js-scroll-trigger" href="#services">Get Started!</a>
                     </div>
                 </div>
@@ -34,7 +35,7 @@
 
         {% block petitions %}
             <div class="container">
-                <h2 class="text-center mt-0">Últimas peticiones</h2>
+                <h2 class="text-center mt-0">Latest petitions</h2>
                 {% if latest_petition_list %}
                 <div class="row">
                 {% for petition in latest_petition_list %}
@@ -54,15 +55,47 @@
                 {% endfor %}
                 </div>
                 {% else %}
-                <p>No hay peticiones en tu zona</p>
+                <p>There is no petitions near your position</p>
                 {% endif %}
                 <hr class="divider my-4" />
                 
             </div>
         {% endblock %}
+
+        {% block offers %}
+            <div class="container">
+                <h2 class="text-center mt-0">Latest offers</h2>
+                {% if latest_offer_list %}
+                <div class="row">
+                {% for offer in latest_offer_list %}
+                    <div class="col-lg-3 col-md-6 text-center">
+                        <div class="mt-5">
+                            {% if offer.offer_img %}
+                            <div class="img-petition">
+                            <img src="{{ offer.offer_img.url }}"  class="" alt="...">
+                            </div>
+                            {% else %}
+                            <i class="fas fa-4x fa-gem text-primary mb-4"></i>
+                            {% endif %}
+                            <h3 class="h4 mb-2">{{ offer.title }}</h3>
+                            <p class="text-muted mb-0">{{ offer.description|truncatewords:25 }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+                {% else %}
+                <p>There is no offers near your position</p>
+                {% endif %}
+                <hr class="divider my-4" />
+                
+            </div>
+        {% endblock %}
+
         <!-- Portfolio section-->
         {% block providers %}
             <div class="container-fluid p-0">
+                <h2 class="text-center mt-0">Business ready to help</h2>
+                <p class="text-black-50 mb-4">These business are ready to help you community. You can order any of their products and send to whom that need them the most</p>
                 <div class="row no-gutters">
                     {% if latest_provider_list %}
                     <div class="row">
@@ -92,8 +125,9 @@
         <!-- Call to action section-->
         {% block cta %}
             <div class="container text-center">
-                <h2 class="mb-4">Free Download at Start Bootstrap!</h2>
-                <a class="btn btn-light btn-xl" href="https://startbootstrap.com/themes/creative/">Download Now!</a>
+                <h2 class="mb-4">Coupons for the future</h2>
+                <p>Maybe is your favourite PUB, Bakery or restaurant. You can help them buying now, but to enjoy in the future. Buy a coupon now and redeem it in the future</p>
+                <a class="btn btn-light btn-xl" href="#">Explore!</a>
             </div>
         {% endblock %}
         <!-- Contact section-->
@@ -103,7 +137,7 @@
                     <div class="col-lg-8 text-center">
                         <h2 class="mt-0">Let's Get In Touch!</h2>
                         <hr class="divider my-4" />
-                        <p class="text-muted mb-5">Ready to start your next project with us? Give us a call or send us an email and we will get back to you as soon as possible!</p>
+                        <p class="text-muted mb-5">Is your business struggling, do you know someone who needs help, do you have anything to offer?/p>
                     </div>
                 </div>
                 <div class="row">

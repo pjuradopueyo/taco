@@ -3,13 +3,13 @@ from django.http import HttpResponse
 from django.template import loader
 from rest_framework import viewsets
 from rest_framework import permissions
-from users.serializers import PetitionSerializer, ResponsePetitionSerializer, ProviderSerializer
+from users.serializers import PetitionSerializer, ResponsePetitionSerializer, ProviderSerializer, OfferSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Petition, ResponsePetition, Provider
+from .models import Petition, ResponsePetition, Provider, Offer
 from .forms import ProviderForm
 from rest_framework import mixins
 from rest_framework import generics
@@ -30,8 +30,10 @@ from django.core.paginator import Paginator
 def index(request):
     latest_petition_list = Petition.objects.order_by('-start_date')[:8]
     latest_provider_list = Provider.objects.order_by('-start_date')[:6]
+    latest_offer_list = Offer.objects.order_by('-start_date')[:6]
     context = {'latest_petition_list': latest_petition_list,
-    'latest_provider_list': latest_provider_list}
+    'latest_provider_list': latest_provider_list,
+    'latest_offer_list': latest_offer_list}
     return render(request, 'users/index.html', context)
 
 #######################################################################
@@ -128,6 +130,55 @@ class PetitionDetail(APIView):
     def delete(self, request, pk, format=None):
         petition = self.get_object(pk)
         petition.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+# API views
+# Offer views
+class OfferList(APIView):
+    """
+    List all offers, or create a new petition.
+    """
+    def get(self, request, format=None):
+        offers = Offer.objects.all()
+        serializer = OfferSerializer(offers, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = OfferSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class OfferDetail(APIView):
+    """
+    Retrieve, update or delete a offer instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Offer.objects.get(pk=pk)
+        except Offer.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        offer = self.get_object(pk)
+        serializer = OfferSerializer(offer)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        offer = self.get_object(pk)
+        serializer = OfferSerializer(offer, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        offer = self.get_object(pk)
+        offer.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 #

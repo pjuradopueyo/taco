@@ -40,6 +40,8 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     path('petitions/', views.PetitionList.as_view()),
     path('petitions/<int:pk>', views.PetitionDetail.as_view()),
+    path('offers/', views.PetitionList.as_view()),
+    path('offers/<int:pk>', views.PetitionDetail.as_view()),
     path('responses/', views.ResponsePetitionList.as_view()),
     path('responses/<int:pk>', views.ResponsePetitionDetail.as_view()),
     url(r'^rest-auth/facebook/$', views.FacebookLogin.as_view(), name='fb_login'),
