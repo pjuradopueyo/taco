@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^rest-auth/google/$', views.GoogleLogin.as_view(), name='gl_login'),
     path('image_upload', views.provider_image_view, name = 'image_upload'), 
     path('success', views.success, name = 'success'),
+    path('', include('pwa.urls')),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

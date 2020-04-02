@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'corsheaders',
+    'pwa',
 ]
 
 MIDDLEWARE = [
@@ -184,3 +185,5 @@ MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'users/static/users/js', 'serviceworker.js')
