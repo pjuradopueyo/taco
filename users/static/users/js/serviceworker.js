@@ -1,4 +1,4 @@
-var staticCacheName = 'taco';
+var staticCacheName = 'djangopwa-v1';
 
 self.addEventListener('install', function(event) {
   event.waitUntil(

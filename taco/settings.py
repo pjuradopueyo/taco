@@ -187,3 +187,15 @@ MEDIA_URL = '/media/'
 CORS_ORIGIN_ALLOW_ALL = True
 
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'users/static/users/js', 'serviceworker.js')
+PWA_APP_NAME = 'TACO'
+PWA_APP_DESCRIPTION = "Taco Taco Taco"
+PWA_APP_THEME_COLOR = '#0A0302'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_START_URL = '/'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/images/icono96.png',
+        'sizes': '96x96'
+    }
+]
