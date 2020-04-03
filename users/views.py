@@ -3,21 +3,24 @@ from django.http import HttpResponse
 from django.template import loader
 from rest_framework import viewsets
 from rest_framework import permissions
-from users.serializers import PetitionSerializer, ResponsePetitionSerializer, ProviderSerializer, OfferSerializer
+from users.serializers import PetitionSerializer, ResponsePetitionSerializer, ProviderSerializer, OfferSerializer, ApplauseSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Petition, ResponsePetition, Provider, Offer
+from .models import Petition, ResponsePetition, Provider, Offer, Applause
 from .forms import ProviderForm
 from rest_framework import mixins
 from rest_framework import generics
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+# from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from django.core.paginator import Paginator
 
+import json
+import logging
+logger = logging.getLogger(__name__)
 #######################################################################
 #
 # PWA
@@ -52,7 +55,7 @@ def index(request):
 #######################################################################
 
 #
-# Detail - Read Only
+# Provider - Read Only
 #
 def provider(request,provider_id):
     provider = get_object_or_404(Provider, pk=provider_id)
@@ -66,6 +69,20 @@ def latest_provider_list(request):
     latest_provider_list = Provider.objects.order_by('-name')[:50]
     context = {'latest_provider_list': latest_provider_list}
     return render(request, 'users/provider_list.html', context)
+
+
+#######################################################################
+# Provider
+#######################################################################
+
+#
+# Provider - Read Only
+#
+def petition(request,petition_id):
+    petition = get_object_or_404(Petition, pk=petition_id)
+    context = {'petition': petition}
+    return render(request, 'users/petition.html', context)
+
 
 ######################################################################
 #
@@ -94,8 +111,8 @@ def ajax_provider_list(request):
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
 
-class FacebookLogin(SocialLoginView):
-    adapter_class = FacebookOAuth2Adapter
+""" class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter """
     
 # API views
 # Petition views
@@ -263,6 +280,44 @@ class ProviderDetail(mixins.RetrieveModelMixin,
                     generics.GenericAPIView):
     queryset = Provider.objects.all()
     serializer_class = ProviderSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+#
+# Contribtions
+#
+# Applause views
+class ApplauseList(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  generics.GenericAPIView):
+    queryset = Applause.objects.all()
+    serializer_class = ApplauseSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        serializer = ApplauseSerializer(data=request.data)
+        
+        logger.error('Autenticado '+json.dumps(request.data))
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ApplauseDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    queryset = Applause.objects.all()
+    serializer_class = ApplauseSerializer
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)

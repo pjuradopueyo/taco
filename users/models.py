@@ -46,8 +46,8 @@ class Petition(models.Model):
     title = models.CharField(max_length=500)
     description = models.TextField(null=True, blank=True)
     place = models.ForeignKey(Place, on_delete=models.CASCADE, null=True)
-    start_date = models.DateField(null=True)
-    finish_date = models.DateField(null=True)
+    start_date = models.DateTimeField(null=True)
+    finish_date = models.DateTimeField(null=True)
     radio = models.IntegerField(null=True)
     intensity = models.IntegerField()
     petition_img = models.ImageField(upload_to='petition/', null=True, blank=True)
@@ -62,8 +62,8 @@ class Offer(models.Model):
     description = models.TextField(null=True, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    start_date = models.DateField(default=datetime.now, blank=True)
-    finish_date = models.DateField()
+    start_date = models.DateTimeField(default=datetime.now, blank=True)
+    finish_date = models.DateTimeField()
     radio = models.IntegerField()
     intensity = models.IntegerField()
     offer_img = models.ImageField(upload_to='offer/',null=True, blank=True)
@@ -85,7 +85,7 @@ class ResponsePetition(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     content = models.CharField(max_length=500)
     petition = models.ForeignKey(Petition, on_delete=models.CASCADE)
-    start_date = models.DateField(default=datetime.now, blank=True)
+    start_date = models.DateTimeField(default=datetime.now, blank=True)
 
 class Provider(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -97,7 +97,7 @@ class Provider(models.Model):
     secondary_image_2 = models.ImageField(upload_to='images/',null=True, blank=True)
     secondary_image_3 = models.ImageField(upload_to='images/',null=True, blank=True)
     secondary_image_4 = models.ImageField(upload_to='images/',null=True, blank=True)
-    start_date = models.DateField(default=datetime.now, blank=True)
+    start_date = models.DateTimeField(default=datetime.now, blank=True)
     def __str__(self):
         return self.name
 
@@ -121,3 +121,11 @@ class Coupon(models.Model):
     url = models.CharField(max_length=500)
     coupon_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
     price = models.IntegerField()
+
+class Applause(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    petition = models.ForeignKey(Petition, on_delete=models.CASCADE)
+    start_date = models.DateTimeField(default=datetime.now)
+    duration = models.IntegerField(null=True, blank=True)
+    claps = models.IntegerField()
+    progress = models.IntegerField(null=True, blank=True)

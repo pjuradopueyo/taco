@@ -22,13 +22,14 @@ from django.conf.urls.static import static
 from rest_framework_simplejwt import views as jwt_views
 from users import views
 from rest_framework.urlpatterns import format_suffix_patterns
-
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 urlpatterns = [
     path('', views.index),
     path('users/', include('users.urls')),
     path('provider/<int:provider_id>/', views.provider, name='provider'),
     path('providers/', views.latest_provider_list,name='latest_provider_list'),
+    path('petition/<int:petition_id>/', views.petition, name='petition'),
     path('ajax/providers/', views.ajax_provider_list,name='ajax_provider_list'),
     path('admin/', admin.site.urls),
     url(r'^rest-auth/', include('rest_auth.urls')),
@@ -42,14 +43,17 @@ urlpatterns = [
     path('petitions/<int:pk>', views.PetitionDetail.as_view()),
     path('offers/', views.PetitionList.as_view()),
     path('offers/<int:pk>', views.PetitionDetail.as_view()),
+    path('applauses/', views.ApplauseList.as_view(), name='applauses'),
+    path('applauses/<int:pk>', views.ApplauseDetail.as_view()),
     path('responses/', views.ResponsePetitionList.as_view()),
     path('responses/<int:pk>', views.ResponsePetitionDetail.as_view()),
-    url(r'^rest-auth/facebook/$', views.FacebookLogin.as_view(), name='fb_login'),
     url(r'^rest-auth/google/$', views.GoogleLogin.as_view(), name='gl_login'),
     path('image_upload', views.provider_image_view, name = 'image_upload'), 
     path('success', views.success, name = 'success'),
     path('base_layout', views.base_layout),
     path('', include('pwa.urls')),
+    url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^api-token-refresh/', refresh_jwt_token),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
