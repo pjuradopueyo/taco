@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -18,8 +18,10 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from django.core.paginator import Paginator
 
+
 import json
 import logging
+import copy
 logger = logging.getLogger(__name__)
 #######################################################################
 #
@@ -80,8 +82,40 @@ def latest_provider_list(request):
 #
 def petition(request,petition_id):
     petition = get_object_or_404(Petition, pk=petition_id)
-    context = {'petition': petition}
+    count = Petition.objects.filter(added_to=petition_id).count()
+    context = {'petition': petition, 'count': count}
     return render(request, 'users/petition.html', context)
+
+
+
+#######################################################################
+# Petition
+#######################################################################
+
+#
+# Petition - Petition
+#
+def petition_add(request): 
+    if request.user.is_authenticated:
+        logger.error('Autenticado en el petition add')
+    else:
+        logger.error('No autenticado')
+
+    if request.method == 'POST': 
+ 
+        if request.user.is_authenticated:
+            form = PetitionNewForm(request.POST, request.FILES) 
+            if form.is_valid(): 
+                result_petition = form.save() 
+                result_petition.user=request.user
+                result_petition.save()
+                return redirect('index') 
+        else:
+            return redirect('account_login') 
+
+    else: 
+        form = PetitionNewForm() 
+    return render(request, 'users/petition_add.html', {'form' : form}) 
 
 
 ######################################################################
@@ -106,6 +140,40 @@ def ajax_provider_list(request):
     provider_list = paginator.get_page(page_number)
     context = {'provider_list': provider_list}
     return render(request, 'users/ajax_provider_list.html', context)
+
+#######################################################################
+# Petition
+#######################################################################
+
+#
+# Petition - Petition
+#
+def petition_join(request,pk): 
+    if request.user.is_authenticated:
+        logger.error('Autenticado en el petition add')
+    else:
+        logger.error('No autenticado')
+
+    # Seleccionar si existe ya una con parent tal, y si si, se devuelve un duplicado
+    if Petition.objects.filter(added_to=pk,user=request.user).count() > 0:
+        logger.error('Duplicado')
+        return JsonResponse({'status':"duplicated"})
+    
+    parent = Petition.objects.get(pk=pk)
+    petition = Petition()
+    petition.title = parent.title
+    petition.description = parent.description
+    petition.place = parent.place
+    petition.start_date = parent.start_date
+    petition.finish_date = parent.finish_date
+    petition.radio = parent.radio
+    petition.intensity = parent.intensity
+    petition.petition_img = parent.petition_img 
+    petition.added_to = parent
+    petition.user=request.user
+    petition.save()
+    return JsonResponse({'id':petition.id})
+
 
 # Social login
 class GoogleLogin(SocialLoginView):
@@ -161,28 +229,7 @@ class PetitionDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# Create your views here. 
-def petition_add(request): 
-    if request.user.is_authenticated:
-        logger.error('Autenticado en el petition add')
-    else:
-        logger.error('No autenticado')
 
-    if request.method == 'POST': 
- 
-        if request.user.is_authenticated:
-            form = PetitionNewForm(request.POST, request.FILES) 
-            if form.is_valid(): 
-                result_petition = form.save() 
-                result_petition.user=request.user
-                result_petition.save()
-                return redirect('index') 
-        else:
-            return redirect('accounts/login') 
-
-    else: 
-        form = PetitionNewForm() 
-    return render(request, 'users/petition_add.html', {'form' : form}) 
 
 # API views
 # Offer views

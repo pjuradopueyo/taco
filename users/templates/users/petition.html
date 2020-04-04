@@ -22,7 +22,11 @@
               <h1>No Autenticado</h1>
               {% endif%}
               <div class="col-md-8">
+                {% if petition.petition_img %}
                 <img src="{{ petition.petition_img.url }}" class="img-responsive" style="width: 100%; float: left; margin-right: 10px;" /> 
+                {% else %}
+                <h1>No Imgen</h1>
+                {% endif%}
               </div>
           
               <div class="col-md-4">
@@ -45,11 +49,11 @@
           
             <div class="row">
           
-              <div class="col-md-4 col-sm-4 mb-4">
-                <a href="#">
-                  <p>Join</p>
+              <div class="col-md-4 col-sm-4 mb-4 join">
+
+                  <p>Join - <span id="count-join">{{count}}</span></p>
                       <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-                    </a>
+
               </div>
           
               <div class="col-md-4 col-sm-4 mb-4 clap">
@@ -80,6 +84,27 @@
               var clapTimer;
               var init;
 
+              function join() {
+
+
+                $.ajax({
+                  url: '{% url "petition_join" pk=petition.id %}',
+                  data: {},
+                  type:"POST",
+                  beforeSend: function (xhr, settings) {
+                      xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                  },
+                  dataType: 'json',
+                  success: function (data) {
+                    console.log("Enviado join "+ $("span#count-join").html());
+                    $("span#count-join").html(parseInt($("span#count-join").html())+1)
+                    if (data.is_taken) {
+                      alert("A user with this username already exists.");
+                    }
+                  }
+                });                
+              }
+
               function sendApplause() {
                 clearTimeout(clapTimer);
                 clearTimeout(maxTime);
@@ -107,6 +132,11 @@
                   }
                 });                
               }
+
+              $('.join').click(function () {
+                join();
+                $('.join').off();
+              });
 
               $('.clap').click(function () {
                 clearTimeout(clapTimer);
