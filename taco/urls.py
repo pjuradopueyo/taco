@@ -30,6 +30,7 @@ urlpatterns = [
     path('provider/<int:provider_id>/', views.provider, name='provider'),
     path('providers/', views.latest_provider_list,name='latest_provider_list'),
     path('petition/<int:petition_id>/', views.petition, name='petition'),
+    path('petition/add', views.petition_add, name = 'petition_add'), 
     path('ajax/providers/', views.ajax_provider_list,name='ajax_provider_list'),
     path('admin/', admin.site.urls),
     url(r'^rest-auth/', include('rest_auth.urls')),

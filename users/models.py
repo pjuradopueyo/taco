@@ -46,10 +46,10 @@ class Petition(models.Model):
     title = models.CharField(max_length=500)
     description = models.TextField(null=True, blank=True)
     place = models.ForeignKey(Place, on_delete=models.CASCADE, null=True)
-    start_date = models.DateTimeField(null=True)
+    start_date = models.DateTimeField(default=datetime.now, blank=True)
     finish_date = models.DateTimeField(null=True)
     radio = models.IntegerField(null=True)
-    intensity = models.IntegerField()
+    intensity = models.IntegerField(default=50)
     petition_img = models.ImageField(upload_to='petition/', null=True, blank=True)
     added_to = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
     

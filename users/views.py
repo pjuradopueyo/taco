@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Petition, ResponsePetition, Provider, Offer, Applause
-from .forms import ProviderForm
+from .forms import ProviderForm, PetitionForm, PetitionNewForm
 from rest_framework import mixins
 from rest_framework import generics
 # from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
@@ -161,7 +161,28 @@ class PetitionDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# Create your views here. 
+def petition_add(request): 
+    if request.user.is_authenticated:
+        logger.error('Autenticado en el petition add')
+    else:
+        logger.error('No autenticado')
 
+    if request.method == 'POST': 
+ 
+        if request.user.is_authenticated:
+            form = PetitionNewForm(request.POST, request.FILES) 
+            if form.is_valid(): 
+                result_petition = form.save() 
+                result_petition.user=request.user
+                result_petition.save()
+                return redirect('index') 
+        else:
+            return redirect('accounts/login') 
+
+    else: 
+        form = PetitionNewForm() 
+    return render(request, 'users/petition_add.html', {'form' : form}) 
 
 # API views
 # Offer views
