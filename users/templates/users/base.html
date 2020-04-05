@@ -33,8 +33,11 @@
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#services">Petitions and offers</a></li>
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#portfolio">Send help</a></li>
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Buy future</a></li>
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'account_login' %}">Login</a></li>
+                        {% if user.is_authenticated %}
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'account_logout' %}">Logout</a></li>
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'account_login' %}">Login</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -68,7 +71,6 @@
             <div class="container"><div class="small text-center text-muted">Copyright © 2020 - Taco</div></div>
         </footer>
         <link href="{% static 'users/js/scripts.js' %}">
-        <link href="{% static 'useedwrs/jswedweededwedridwpts.js' %}">
         <!-- Bootstrap core JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>

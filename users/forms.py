@@ -2,6 +2,7 @@ from django import forms
 from .models import *
 from PIL import Image
 from django.core.files import File
+from allauth.account.forms import LoginForm, SignupForm
 
 class ProviderForm(forms.ModelForm): 
   
@@ -36,3 +37,19 @@ class PetitionNewForm(PetitionForm):
     def save(self):
         petition = super(PetitionNewForm, self).save()
         return petition
+
+class TacoLoginForm(LoginForm):
+    def __init__(self, *args, **kwargs):
+        super(TacoLoginForm, self).__init__(*args, **kwargs)
+        for fieldname, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control'
+            })
+
+class TacoSignupForm(LoginForm):
+    def __init__(self, *args, **kwargs):
+        super(TacoSignupForm, self).__init__(*args, **kwargs)
+        for fieldname, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control'
+            })
