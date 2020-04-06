@@ -28,7 +28,7 @@ class PetitionForm(forms.ModelForm):
             image = Image.open(petition.petition_img)
             cropped_image = image.crop((0, 0, 350, 350))
             resized_image = cropped_image.resize((350, 350), Image.ANTIALIAS)
-            resized_image.save(petition.provider_main_img.path)
+            resized_image.save(petition.petition_main_img.path)
         return petition
 
 class PetitionNewForm(PetitionForm):
