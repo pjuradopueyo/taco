@@ -30,7 +30,7 @@ urlpatterns = [
     path('provider/<int:provider_id>/', views.provider, name='provider'),
     path('providers/', views.latest_provider_list,name='latest_provider_list'),
     path('petition/<int:petition_id>/', views.petition, name='petition'),
-    path('petition/add', views.petition_add, name = 'petition_add'),
+    path('petition/add/<str:petition_type>', views.petition_add, name = 'petition_add'),
     path('ajax/petition/join/<int:pk>/', views.petition_join, name='petition_join'),
     path('ajax/providers/', views.ajax_provider_list,name='ajax_provider_list'),
     path('admin/', admin.site.urls),

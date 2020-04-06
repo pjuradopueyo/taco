@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from datetime import datetime  
 
+
 from .managers import CustomUserManager
 
 
@@ -25,6 +26,16 @@ class Country(models.Model):
     def __str__(self):
         return self.name
 
+class Product(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField(null=True, blank=True)
+    url = models.CharField(max_length=100,null=True, blank=True)
+    product_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
+    price = models.IntegerField(null=True, blank=True)
+    def __str__(self):
+        return self.name
+
+
 class Place(models.Model):
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
@@ -41,6 +52,21 @@ class Place(models.Model):
     door_name = models.CharField(max_length=16, null=True)
     place_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
 
+
+class Provider(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=500)
+    description = models.TextField(null=True, blank=True)
+    url = models.CharField(max_length=500)
+    provider_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
+    secondary_image_1 = models.ImageField(upload_to='images/',null=True, blank=True)
+    secondary_image_2 = models.ImageField(upload_to='images/',null=True, blank=True)
+    secondary_image_3 = models.ImageField(upload_to='images/',null=True, blank=True)
+    secondary_image_4 = models.ImageField(upload_to='images/',null=True, blank=True)
+    start_date = models.DateTimeField(default=datetime.now, blank=True)
+    def __str__(self):
+        return self.name
+
 class Petition(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     title = models.CharField(max_length=500)
@@ -51,8 +77,11 @@ class Petition(models.Model):
     radio = models.IntegerField(null=True)
     intensity = models.IntegerField(default=50)
     petition_img = models.ImageField(upload_to='petition/', null=True, blank=True)
-    added_to = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
-    
+    added_to = models.ForeignKey('self', related_name='added_to_petition', on_delete=models.CASCADE, null=True)
+    petition_type = models.CharField(max_length=10,default='petition')
+    answer_to = models.ForeignKey('self', related_name='answer_to_petition', on_delete=models.CASCADE, null=True)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
     class Meta:
         ordering = ['start_date']
 
@@ -87,19 +116,7 @@ class ResponsePetition(models.Model):
     petition = models.ForeignKey(Petition, on_delete=models.CASCADE)
     start_date = models.DateTimeField(default=datetime.now, blank=True)
 
-class Provider(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    name = models.CharField(max_length=500)
-    description = models.TextField(null=True, blank=True)
-    url = models.CharField(max_length=500)
-    provider_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
-    secondary_image_1 = models.ImageField(upload_to='images/',null=True, blank=True)
-    secondary_image_2 = models.ImageField(upload_to='images/',null=True, blank=True)
-    secondary_image_3 = models.ImageField(upload_to='images/',null=True, blank=True)
-    secondary_image_4 = models.ImageField(upload_to='images/',null=True, blank=True)
-    start_date = models.DateTimeField(default=datetime.now, blank=True)
-    def __str__(self):
-        return self.name
+
 
 class TagPetition(models.Model):
     petition = models.ForeignKey(Petition, on_delete=models.CASCADE)
@@ -116,9 +133,10 @@ class TagProvider(models.Model):
 
 class Coupon(models.Model):
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,null=True, blank=True)
     name = models.CharField(max_length=500)
     description = models.TextField(null=True, blank=True)
-    url = models.CharField(max_length=500)
+    url = models.CharField(max_length=500, null=True, blank=True)
     coupon_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
     price = models.IntegerField()
 
@@ -129,3 +147,11 @@ class Applause(models.Model):
     duration = models.IntegerField(null=True, blank=True)
     claps = models.IntegerField()
     progress = models.IntegerField(null=True, blank=True)
+
+class ProductItem(models.Model):
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    description = models.TextField(null=True, blank=True)
+    url = models.CharField(max_length=500)
+    item_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
+    start_date = models.DateTimeField(default=datetime.now)

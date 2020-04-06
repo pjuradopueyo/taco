@@ -95,7 +95,7 @@ def petition(request,petition_id):
 #
 # Petition - Petition
 #
-def petition_add(request): 
+def petition_add(request,petition_type): 
     if request.user.is_authenticated:
         logger.error('Autenticado en el petition add')
     else:
@@ -114,7 +114,7 @@ def petition_add(request):
             return redirect('account_login') 
 
     else: 
-        form = PetitionNewForm() 
+        form = PetitionNewForm(initial={'petition_type': petition_type}) 
     return render(request, 'users/petition_add.html', {'form' : form}) 
 
 

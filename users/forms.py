@@ -9,6 +9,7 @@ class ProviderForm(forms.ModelForm):
     class Meta: 
         model = Provider 
         fields = ['user', 'name', 'description', 'url','provider_main_img'] 
+
     def save(self):
         provider = super(ProviderForm, self).save()
         image = Image.open(provider.provider_main_img)
@@ -33,7 +34,8 @@ class PetitionForm(forms.ModelForm):
 class PetitionNewForm(PetitionForm):
     class Meta:
         model = Petition
-        exclude = ['user','place','start_date','finish_date','radio','intensity','added_to']
+        widgets = {'petition_type': forms.HiddenInput()}
+        exclude = ['user','place','start_date','finish_date','radio','intensity','added_to','provider','answer_to']
     def save(self):
         petition = super(PetitionNewForm, self).save()
         return petition
