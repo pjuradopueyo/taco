@@ -3,13 +3,13 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from rest_framework import viewsets
 from rest_framework import permissions
-from users.serializers import PetitionSerializer, ResponsePetitionSerializer, ProviderSerializer, OfferSerializer, ApplauseSerializer
+from users.serializers import PetitionSerializer, ResponsePetitionSerializer, ProviderSerializer, OfferSerializer, ApplauseSerializer, FollowingSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Petition, ResponsePetition, Provider, Offer, Applause
+from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following
 from .forms import ProviderForm, PetitionForm, PetitionNewForm
 from rest_framework import mixins
 from rest_framework import generics
@@ -17,6 +17,7 @@ from rest_framework import generics
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 import json
@@ -82,8 +83,9 @@ def latest_provider_list(request):
 #
 def petition(request,petition_id):
     petition = get_object_or_404(Petition, pk=petition_id)
-    count = Petition.objects.filter(added_to=petition_id).count()
-    context = {'petition': petition, 'count': count}
+    count_join = Petition.objects.filter(added_to=petition_id).count()
+    count_following = Following.objects.filter(following_to=petition.user.id).count()
+    context = {'petition': petition, 'count_join': count_join, 'count_following': count_following}
     return render(request, 'users/petition.html', context)
 
 
@@ -117,6 +119,24 @@ def petition_add(request,petition_type):
         form = PetitionNewForm(initial={'petition_type': petition_type}) 
     return render(request, 'users/petition_add.html', {'form' : form}) 
 
+
+#
+# Petition - Petition
+#
+def PrivatePetitionList(request): 
+    if request.user.is_authenticated:
+        logger.error('Autenticado en el petition add')
+    else:
+        logger.error('No autenticado')
+
+    following_list = Following.objects.filter(user=request.user).values_list('following_to', flat=True).order_by('following_to')
+    logger.error('Following ' + str(following_list))
+    petition_list = Petition.objects.filter(Q(user__in= following_list) | Q(user=request.user)).order_by('-start_date')
+    logger.error('Petition' + str(petition_list))
+    context = {'petition_list': petition_list}
+
+
+    return render(request, 'private/petitions.html', context) 
 
 ######################################################################
 #
@@ -173,6 +193,7 @@ def petition_join(request,pk):
     petition.user=request.user
     petition.save()
     return JsonResponse({'id':petition.id})
+
 
 
 # Social login
@@ -386,6 +407,45 @@ class ApplauseDetail(mixins.RetrieveModelMixin,
                     generics.GenericAPIView):
     queryset = Applause.objects.all()
     serializer_class = ApplauseSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+#
+# Contribtions
+#
+# Applause views
+class FollowingList(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  generics.GenericAPIView):
+    queryset = Following.objects.all()
+    serializer_class = FollowingSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        serializer = FollowingSerializer(data=request.data)
+        
+        logger.error('Autenticado '+json.dumps(request.data))
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FollowingDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    queryset = Following.objects.all()
+    serializer_class = FollowingSerializer
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)

@@ -1,4 +1,4 @@
-from .models import Petition, ResponsePetition, Provider, Offer, Applause
+from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following
 from rest_framework import serializers
 
 
@@ -46,4 +46,13 @@ class ApplauseSerializer(serializers.ModelSerializer):
         read_only_fields = ['user']
     def create(self, validated_data):
         request = Applause.objects.create(**validated_data)
+        return request
+
+class FollowingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Following
+        fields = "__all__"
+        read_only_fields = ['user']
+    def create(self, validated_data):
+        request = Following.objects.create(**validated_data)
         return request

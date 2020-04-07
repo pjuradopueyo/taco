@@ -155,3 +155,32 @@ class ProductItem(models.Model):
     url = models.CharField(max_length=500)
     item_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
     start_date = models.DateTimeField(default=datetime.now)
+    affiliate_code = models.CharField(max_length=100, null=True, blank=True)
+
+class Order(models.Model):
+    product_item = models.ForeignKey(Product, on_delete=models.CASCADE)
+    petition = models.ForeignKey(Petition, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    description = models.TextField(null=True, blank=True)
+    order_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
+    start_date = models.DateTimeField(default=datetime.now)
+    url = models.CharField(max_length=500, null=True, blank=True)
+    status = models.CharField(max_length=25, default='new')
+
+
+class OfferReaction(models.Model):
+    offer_petition = models.ForeignKey(Petition, on_delete=models.CASCADE)
+    status = models.CharField(max_length=25, default='accepted')
+    date = models.DateTimeField(default=datetime.now)
+    message = models.TextField(null=True, blank=True)
+
+class Following(models.Model):
+    user = models.ForeignKey(CustomUser, related_name='me', on_delete=models.CASCADE, null=True)
+    following_to = models.ForeignKey(CustomUser, related_name='following_to', on_delete=models.CASCADE, null=True)
+    status = models.CharField(max_length=15, default='accepted')
+    petition_date = models.DateTimeField(default=datetime.now, blank=True)
+    relation_date = models.DateTimeField(null=True, blank=True)
+    message = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['petition_date']

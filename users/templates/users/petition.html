@@ -1,156 +1,166 @@
 {% extends "users/base.html" %}
 {% load static %}
 
-        {% block title %}Taco - {{ petition.name }}  {% endblock %}
-        <!-- Masthead-->
-        
-        <!-- About section-->
+{% block title %}Taco - {{ petition.name }} {% endblock %}
+<!-- Masthead-->
 
-        {% block content %} 
-        <div class="container">
+<!-- About section-->
 
-            <!-- Portfolio Item Heading -->
-            <h1 class="my-4">Page Heading
-              <small>{{ petition.name }} </small>
-            </h1>
-          
-            <!-- Portfolio Item Row -->
-            <div class="row">
-              {% if user.is_authenticated %}
-              <h1>Autenticado</h1>
-              {% else %}
-              <h1>No Autenticado</h1>
-              {% endif%}
-              <div class="col-md-8">
-                {% if petition.petition_img %}
-                <img src="{{ petition.petition_img.url }}" class="img-responsive" style="width: 100%; float: left; margin-right: 10px;" /> 
-                {% else %}
-                <h1>No Imgen</h1>
-                {% endif%}
-              </div>
-          
-              <div class="col-md-4">
-                <h3 class="my-3">Project Description</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
-                <h3 class="my-3">Project Details</h3>
-                <ul>
-                  <li>Lorem Ipsum</li>
-                  <li>Dolor Sit Amet</li>
-                  <li>Consectetur</li>
-                  <li>Adipiscing Elit</li>
-                </ul>
-              </div>
-          
-            </div>
-            <!-- /.row -->
-          
-            <!-- Related Projects Row -->
-            <h3 class="my-4">Related Projects</h3>
-          
-            <div class="row">
-          
-              <div class="col-md-4 col-sm-4 mb-4 join">
+{% block content %}
+<div class="container">
 
-                  <p>Join - <span id="count-join">{{count}}</span></p>
-                      <img class="img-fluid" src="http://placehold.it/500x300" alt="">
+  <!-- Portfolio Item Heading -->
+  <h1 class="my-4">Page Heading
+    <small>{{ petition.name }} </small>
+  </h1>
 
-              </div>
-          
-              <div class="col-md-4 col-sm-4 mb-4 clap">
+  <!-- Portfolio Item Row -->
+  <div class="row">
+    <div class="col-md-8">
+      {% if petition.petition_img %}
+      <img src="{{ petition.petition_img.url }}" class="img-responsive"
+        style="width: 100%; float: left; margin-right: 10px;" />
+      {% else %}
+      <h1>No Imgen</h1>
+      {% endif%}
+    </div>
 
-                  <p>Applause</p>
-                      <img class="img-fluid" src="http://placehold.it/500x300" alt="">
+    <div class="col-md-4">
+      <h3 class="my-3">{{ petition.name }} </h3>
+      <p>{{ petition.description }}</p>
+      <p class="my-3 text-center">{{ petition.user.get_full_name }}</p>
+      <ul>
+        <li class="follow btn btn-info">Follow - <span id="count-following">{{count_following}}</span></li>
+        <li class="join btn btn-info">Join - <span id="count-join">{{count_join}}</span></li>
+        <li class="clap btn btn-info">Applause</li>
+        <li class="offer btn btn-info">Offer</li>
+      </ul>
+    </div>
 
-              </div>
-          
-              <div class="col-md-4 col-sm-4 mb-4">
-                <a href="#">
-                  <p>Answer</p>
-                      <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-                    </a>
-              </div>
-          
-              
-          
-            </div>
-            <!-- /.row -->
-          
-          </div>
-          {% endblock %}
-          {% block extra_js %}
-          <script>
-              var claps = 1;
-              var maxTime;
-              var clapTimer;
-              var init;
+  </div>
+  <!-- /.row -->
 
-              function join() {
+  <!-- Related Projects Row -->
+  <h3 class="my-4">Related petitions</h3>
+  <div class="row">
+    <div class="col-md-4 col-sm-4 mb-4">
+      <p>Petition</p>
+      <img class="img-fluid" src="http://placehold.it/500x300" alt="">
+    </div>
+    <div class="col-md-4 col-sm-4 mb-4">
+      <p>Petition</p>
+      <img class="img-fluid" src="http://placehold.it/500x300" alt="">
+    </div>
+    <div class="col-md-4 col-sm-4 mb-4">
+      <a href="#">
+        <p>Petition</p>
+        <img class="img-fluid" src="http://placehold.it/500x300" alt="">
+      </a>
+    </div>
+  </div>
+  <!-- /.row -->
+
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  var claps = 1;
+  var maxTime;
+  var clapTimer;
+  var init;
+
+  function join() {
 
 
-                $.ajax({
-                  url: '{% url "petition_join" pk=petition.id %}',
-                  data: {},
-                  type:"POST",
-                  beforeSend: function (xhr, settings) {
-                      xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-                  },
-                  dataType: 'json',
-                  success: function (data) {
-                    console.log("Enviado join "+ $("span#count-join").html());
-                    $("span#count-join").html(parseInt($("span#count-join").html())+1)
-                    if (data.is_taken) {
-                      alert("A user with this username already exists.");
-                    }
-                  }
-                });                
-              }
+    $.ajax({
+      url: '{% url "petition_join" pk=petition.id %}',
+      data: {},
+      type: "POST",
+      beforeSend: function (xhr, settings) {
+        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+      },
+      dataType: 'json',
+      success: function (data) {
+        console.log("Enviado join " + $("span#count-join").html());
+        $("span#count-join").html(parseInt($("span#count-join").html()) + 1)
+        if (data.is_taken) {
+          alert("A user with this username already exists.");
+        }
+      }
+    });
+  }
 
-              function sendApplause() {
-                clearTimeout(clapTimer);
-                clearTimeout(maxTime);
-                var totalTime = parseInt((Date.now() - init)/1000);
-                $('.clap').off();
-                console.log(claps + " - " + totalTime);
-                $.ajax({
-                  url: '{% url "applauses" %}',
-                  data: {
-                    'petition': '{{ petition.id }}',
-                    'claps': claps,
-                    'duration': totalTime,
-                    'intensisty': '50'
-                  },
-                  type:"POST",
-                  beforeSend: function (xhr, settings) {
-                      xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-                  },
-                  dataType: 'json',
-                  success: function (data) {
-                    console.log("Enviado");
-                    if (data.is_taken) {
-                      alert("A user with this username already exists.");
-                    }
-                  }
-                });                
-              }
+  function sendApplause() {
+    clearTimeout(clapTimer);
+    clearTimeout(maxTime);
+    var totalTime = parseInt((Date.now() - init) / 1000);
+    $('.clap').off();
+    console.log(claps + " - " + totalTime);
+    $.ajax({
+      url: '{% url "applauses" %}',
+      data: {
+        'petition': '{{ petition.id }}',
+        'claps': claps,
+        'duration': totalTime,
+        'intensisty': '50'
+      },
+      type: "POST",
+      beforeSend: function (xhr, settings) {
+        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+      },
+      dataType: 'json',
+      success: function (data) {
+        console.log("Enviado");
+        if (data.is_taken) {
+          alert("A user with this username already exists.");
+        }
+      }
+    });
+  }
 
-              $('.join').click(function () {
-                join();
-                $('.join').off();
-              });
+  $('.join').click(function () {
+    join();
+    $('.join').off();
+  });
 
-              $('.clap').click(function () {
-                clearTimeout(clapTimer);
-                if (claps == 1) {
-                  init = Date.now();    
-                  maxTime = setTimeout(sendApplause, 20000); 
-                }
-                claps += 1;
-                clapTimer = setTimeout(sendApplause, 5000);
-                console.log(claps);
-              });
-              
+  $('.clap').click(function () {
+    clearTimeout(clapTimer);
+    if (claps == 1) {
+      init = Date.now();
+      maxTime = setTimeout(sendApplause, 20000);
+    }
+    claps += 1;
+    clapTimer = setTimeout(sendApplause, 5000);
+    console.log(claps);
+  });
 
 
 
-          </script>
-          {% endblock extra_js %}
+  function follow() {
+
+    $.ajax({
+      url: '{% url "following" %}',
+      data: {
+        'following_to': '{{ petition.user.id }}'
+      },
+      type: "POST",
+      beforeSend: function (xhr, settings) {
+        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+      },
+      dataType: 'json',
+      success: function (data) {
+        $("span#count-follow").html(parseInt($("span#count-follow").html()) + 1)
+        console.log("Enviado following");
+        if (data.is_taken) {
+        }
+      }
+    });
+  }
+
+  $('.follow').click(function () {
+    follow();
+    $('.follow').off();
+  });
+
+</script>
+{% endblock extra_js %}
