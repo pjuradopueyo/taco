@@ -18,6 +18,7 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db.models import Count
 
 
 import json
@@ -136,7 +137,9 @@ def PrivatePetitionList(request):
 
     following_list = Following.objects.filter(user=request.user).values_list('following_to', flat=True).order_by('following_to')
     logger.error('Following ' + str(following_list))
-    petition_list = Petition.objects.filter(Q(user__in= following_list) | Q(user=request.user)).order_by('-start_date')
+
+    
+    petition_list = Petition.objects.filter(Q(user__in= following_list) | Q(user=request.user)).annotate(num_joins=Count('added_to_petition')).annotate(num_offers=Count('answer_to_petition')).order_by('-start_date')
     logger.error('Petition' + str(petition_list))
     context = {'petition_list': petition_list}
 
