@@ -18,8 +18,8 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.db.models import Count
-
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Case, When, IntegerField
 
 import json
 import logging
@@ -129,17 +129,27 @@ def petition_add(request,petition_type):
 #
 # Petition - Petition
 #
+@login_required(redirect_field_name='account_login')
 def PrivatePetitionList(request): 
     if request.user.is_authenticated:
         logger.error('Autenticado en el petition add')
     else:
         logger.error('No autenticado')
 
-    following_list = Following.objects.filter(user=request.user).values_list('following_to', flat=True).order_by('following_to')
+    following_list = Following.objects.filter(
+        user=request.user).values_list(
+            'following_to', flat=True).order_by('following_to')
     logger.error('Following ' + str(following_list))
 
     
-    petition_list = Petition.objects.filter(Q(user__in= following_list) | Q(user=request.user)).annotate(num_joins=Count('added_to_petition')).annotate(num_offers=Count('answer_to_petition')).order_by('-start_date')
+    petition_list = Petition.objects.filter(
+        Q(user__in= following_list) | Q(user=request.user)).annotate(
+            num_joins=Count('added_to_petition')).annotate(
+                num_offers=Count('answer_to_petition')).annotate(
+                    num_applauses=Count('applause')).annotate( i_joined=Count(Case(
+                        When(added_to_petition__user__id=request.user.id, then=1),
+                        output_field=IntegerField(),
+                        ))).order_by('-start_date')
     logger.error('Petition' + str(petition_list))
     context = {'petition_list': petition_list}
 
