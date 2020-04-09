@@ -73,6 +73,7 @@ class Petition(models.Model):
     title = models.CharField(max_length=500)
     description = models.TextField(null=True, blank=True)
     place = models.ForeignKey(Place, on_delete=models.CASCADE, null=True)
+    creation_date = models.DateTimeField(default=datetime.now, blank=True)
     start_date = models.DateTimeField(default=datetime.now, blank=True)
     finish_date = models.DateTimeField(null=True)
     radio = models.IntegerField(null=True)
