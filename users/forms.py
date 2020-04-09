@@ -4,6 +4,24 @@ from PIL import Image
 from django.core.files import File
 from allauth.account.forms import LoginForm, SignupForm
 
+
+
+class CustomUserForm(forms.ModelForm): 
+  
+
+    class Meta: 
+        model = CustomUser 
+        fields = ['first_name', 'last_name', 'alias', 'avatar'] 
+
+    def save(self):
+        user = super(CustomUserForm, self).save()
+        image = Image.open(user.avatar)
+        cropped_image = image.crop((0, 0, 650, 350))
+        resized_image = cropped_image.resize((300, 300), Image.ANTIALIAS)
+        resized_image.save(user.avatar.path)
+
+
+
 class ProviderForm(forms.ModelForm): 
   
     class Meta: 
@@ -16,6 +34,8 @@ class ProviderForm(forms.ModelForm):
         cropped_image = image.crop((0, 0, 650, 350))
         resized_image = cropped_image.resize((650, 350), Image.ANTIALIAS)
         resized_image.save(provider.provider_main_img.path)
+
+
 
 class PetitionForm(forms.ModelForm): 
   
@@ -34,8 +54,10 @@ class PetitionForm(forms.ModelForm):
 class PetitionNewForm(PetitionForm):
     class Meta:
         model = Petition
-        widgets = {'petition_type': forms.HiddenInput()}
-        exclude = ['user','place','start_date','finish_date','radio','intensity','added_to','provider','answer_to']
+        widgets = {'petition_type': forms.HiddenInput(),
+        'answer_to': forms.HiddenInput()
+        }
+        exclude = ['user','place','start_date','finish_date','radio','intensity','added_to','provider','privacy']
     def save(self):
         petition = super(PetitionNewForm, self).save()
         return petition

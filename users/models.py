@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
-    spouse_name = models.CharField(blank=True, max_length=100)
+    alias = models.CharField(blank=True, max_length=100)
     date_of_birth = models.DateField(blank=True, null=True)
     avatar = models.ImageField(upload_to='avatar/',null=True, blank=True)
     def __str__(self):
@@ -39,6 +39,7 @@ class Product(models.Model):
 class Place(models.Model):
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
+    visibility = models.CharField(max_length=25,default="public")
     description = models.TextField(null=True, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
@@ -76,6 +77,7 @@ class Petition(models.Model):
     finish_date = models.DateTimeField(null=True)
     radio = models.IntegerField(null=True)
     intensity = models.IntegerField(default=50)
+    privacy = models.CharField(max_length=15, default='public')
     petition_img = models.ImageField(upload_to='petition/', null=True, blank=True)
     added_to = models.ForeignKey('self', related_name='added_to_petition', on_delete=models.CASCADE, null=True)
     petition_type = models.CharField(max_length=10,default='petition')
@@ -177,6 +179,28 @@ class OfferReaction(models.Model):
 class Following(models.Model):
     user = models.ForeignKey(CustomUser, related_name='me', on_delete=models.CASCADE, null=True)
     following_to = models.ForeignKey(CustomUser, related_name='following_to', on_delete=models.CASCADE, null=True)
+    status = models.CharField(max_length=15, default='accepted')
+    petition_date = models.DateTimeField(default=datetime.now, blank=True)
+    relation_date = models.DateTimeField(null=True, blank=True)
+    message = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['petition_date']
+
+class FollowingProvider(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE, null=True)
+    status = models.CharField(max_length=15, default='accepted')
+    petition_date = models.DateTimeField(default=datetime.now, blank=True)
+    relation_date = models.DateTimeField(null=True, blank=True)
+    message = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['petition_date']
+
+class FollowingPlace(models.Model):
+    user = models.ForeignKey(CustomUser,  on_delete=models.CASCADE, null=True)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, null=True)
     status = models.CharField(max_length=15, default='accepted')
     petition_date = models.DateTimeField(default=datetime.now, blank=True)
     relation_date = models.DateTimeField(null=True, blank=True)

@@ -9,8 +9,8 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following
-from .forms import ProviderForm, PetitionForm, PetitionNewForm
+from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following, CustomUser
+from .forms import ProviderForm, PetitionForm, PetitionNewForm, CustomUserForm
 from rest_framework import mixins
 from rest_framework import generics
 # from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
@@ -45,6 +45,10 @@ def base_layout(request):
 # Home
 #######################################################################
 def index(request):
+
+    if request.user.is_authenticated:
+        return redirect('private_petition_list') 
+
     latest_petition_list = Petition.objects.order_by('-start_date')[:8]
     latest_provider_list = Provider.objects.order_by('-start_date')[:6]
     latest_offer_list = Offer.objects.order_by('-start_date')[:6]
@@ -115,9 +119,10 @@ def petition_add(request,petition_type):
         else:
             return redirect('account_login') 
 
-    else: 
-        form = PetitionNewForm(initial={'petition_type': petition_type}) 
-    return render(request, 'users/petition_add.html', {'form' : form}) 
+    else:
+        answer_to=request.GET.get('petition')
+        form = PetitionNewForm(initial={'petition_type': petition_type,'answer_to':answer_to}) 
+    return render(request, 'private/petition_add.html', {'form' : form}) 
 
 
 #
@@ -137,6 +142,34 @@ def PrivatePetitionList(request):
 
 
     return render(request, 'private/petitions.html', context) 
+
+
+#######################################################################
+# Account
+#######################################################################
+
+#
+# User - myAccount
+#
+def my_account(request): 
+    if request.user.is_authenticated:
+        logger.error('Autenticado en el petition add')
+    else:
+        logger.error('No autenticado')
+    user = get_object_or_404(CustomUser, pk=request.user.id)
+    if request.method == 'POST': 
+        
+        if request.user.is_authenticated:
+            form = CustomUserForm(request.POST or None, request.FILES,instance=user) 
+            if form.is_valid(): 
+                form.save() 
+                return redirect('my_account') 
+        else:
+            return redirect('account_login') 
+
+    else:
+        form = CustomUserForm(instance=user) 
+    return render(request, 'private/my_account.html', {'form' : form}) 
 
 ######################################################################
 #
@@ -168,18 +201,24 @@ def ajax_provider_list(request):
 #
 # Petition - Petition
 #
-def petition_join(request,pk): 
+def petition_join(request): 
     if request.user.is_authenticated:
         logger.error('Autenticado en el petition add')
     else:
         logger.error('No autenticado')
 
+    if request.method == 'POST': 
+        petition_id = request.POST.get('petition_id')
+    else:
+        return JsonResponse({'status':"invalid method"})
+
+    logger.error('Es un tipo POST con petition_id'+petition_id)
     # Seleccionar si existe ya una con parent tal, y si si, se devuelve un duplicado
-    if Petition.objects.filter(added_to=pk,user=request.user).count() > 0:
+    if Petition.objects.filter(added_to=petition_id,user=request.user).count() > 0:
         logger.error('Duplicado')
         return JsonResponse({'status':"duplicated"})
     
-    parent = Petition.objects.get(pk=pk)
+    parent = Petition.objects.get(pk=petition_id)
     petition = Petition()
     petition.title = parent.title
     petition.description = parent.description
