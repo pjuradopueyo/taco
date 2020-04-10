@@ -70,7 +70,7 @@ class TacoLoginForm(LoginForm):
                 'class': 'form-control'
             })
 
-class TacoSignupForm(LoginForm):
+class TacoSignupForm(SignupForm):
     def __init__(self, *args, **kwargs):
         super(TacoSignupForm, self).__init__(*args, **kwargs)
         for fieldname, field in self.fields.items():
