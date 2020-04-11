@@ -98,7 +98,7 @@
     {% if random_user_list %}
     <div class="row mt-5">
         <div class="h5 col-lg-6 offset-lg-3 text-center mt-5 mb-3 ">People you may know... (or not)</div>
-        {% for following in random_user_list %}
+        {% for random_user in random_user_list %}
         <div class="col-lg-6 offset-lg-3">
             <a href="#">
                 <div class="cardbox shadow-lg bg-white">
@@ -120,17 +120,17 @@
                         <!--/ dropdown -->
                         <div class="media m-0">
                             <div class="d-flex mr-3">
-                                <a href="{% url 'private_user' following.user.id %}">
-                                    {% if following.user.avatar %}
-                                    <img class="img-fluid rounded-circle" src="{{ following.user.avatar.url }}" alt="User"></a>
+                                <a href="{% url 'private_user' random_user.id %}">
+                                    {% if random_user.avatar %}
+                                    <img class="img-fluid rounded-circle" src="{{ random_user.avatar.url }}" alt="User"></a>
                                     {% else %}
                                     <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}" alt="Image">
                                     {% endif %}
                             </div>
                             <div class="media-body">
-                                <p class="m-0">{{following.user.get_full_name}} - {{following.id}}</p>
-                                <small><span><i class="icon ion-md-pin"></i> Nairobi, Kenya - Petition {{following.id}}</span></small>
-                                <small><span><i class="icon ion-md-time"></i>{{ following.creation_date|timesince }}</span></small>
+                                <p class="m-0">{{random_user.get_full_name}} - {{random_user.id}}</p>
+                                <small><span><i class="icon ion-md-pin"></i> Nairobi, Kenya - Petition </span></small>
+                                <small><span><i class="icon ion-md-time"></i>{{ random_user.creation_date|timesince }}</span></small>
                             </div>
                         </div>
                         <!--/ media -->
@@ -138,16 +138,16 @@
                     <!--/ cardbox-heading -->
 
                     <div class="cardbox-item">
-                        {% if following.following_img %}
-                        <img class="img-fluid" src="{{ following.user.avatar.url }}" alt="Image">
+                        {% if random_user.avatar%}
+                        <img class="img-fluid" src="{{ random_user.avatar.url }}" alt="Image">
                         {% else %}
                         <img class="img-fluid" src="{% static 'users/images/default.jpg' %}" alt="Image">
                         {% endif %}
                     </div>
                     <!--/ cardbox-item -->
                     <div class="cardbox-title">
-                        <span class="mb-0">{{ following.title }}</span>
-                        <p class="text-muted">{{ following.description|truncatewords:25 }}</p>
+
+                        <p class="text-muted">{{ random_user.description|truncatewords:25 }}</p>
                     </div>
                     <div class="cardbox-base">
                         <ul class="float-right">
@@ -170,10 +170,25 @@
                             <li><a href="#"><img
                                         src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/2.jpg"
                                         class="img-fluid rounded-circle" alt="User"></a></li>
-                            <li><a><span class="joined_{{ following.id }}">{{ following.num_joins }}</span> following {{following.name}}</a></li>
+                            <li><a><span class="follow_{{ random_user.id }}">{{ random_user.num_joins }}</span> following {{random_user.get_full_name}} y yo {{random_user.i_joined}}</a></li>
                         </ul>
                     </div>
                     <!--/ cardbox-like -->
+                    <div class="cardbox-comments">
+
+                        <ul>
+                            {% if random_user.id != user.id %}
+
+                                <li class="follow_btn_{{ random_user.id }} btn btn-info" onclick="javascript:follow('{{ random_user.id }}')">Follow</li>
+
+                                <li class="unfollow_btn_{{ random_user.id }} invisible btn btn-info" onclick="javascript:follow('{{ random_user.id }}')">Unfollow</li>
+
+                            {% endif %}
+
+                        </ul>
+
+                        <!--/. Search -->
+                    </div>
                 </div>
                 <!--/ cardbox -->
             </a>
@@ -190,3 +205,43 @@
 
 
 {% endblock %}
+
+
+{% block extra_js %}
+<script>
+
+
+
+
+
+    function follow(user_id) {
+        $(".follow_btn_"+user_id).hide();
+
+        $.ajax({
+            
+            url: '{% url "following" %}',
+            data: {
+                'following_to': user_id
+            },
+            type: "POST",
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            dataType: 'json',
+            success: function (data) {
+                $("span#count-follow").html(parseInt($("span#count-follow").html()) + 1)
+                console.log("Enviado following");
+                $(".unfollow_btn_"+user_id).removeClass("invisible");
+                if (data.is_taken) {
+                }
+            }
+        });
+    }
+
+    $('.follow').click(function () {
+        follow();
+        $('.follow').off();
+    });
+
+</script>
+{% endblock extra_js %}

@@ -234,7 +234,13 @@ def private_following_list(request):
     following_list = Following.objects.filter(
         user=request.user).order_by('following_to__first_name')
 
-    random_user_list = Following.objects.order_by('user__last_login')[:8]
+    following_list_id = Following.objects.filter(
+        user=request.user).values_list(
+            'following_to', flat=True).order_by('following_to')
+   
+    random_user_list = CustomUser.objects.exclude(
+        Q(pk__in = following_list_id) | Q(pk=request.user.id))
+
 
     context = {'following_list': following_list,
         'random_user_list': random_user_list}
@@ -303,6 +309,7 @@ def private_provider_list(request):
 #
 # List - Ajax 
 #
+@login_required(redirect_field_name='account_login')
 def ajax_provider_list(request):
     page_size = request.GET.get('page_size')
     page_number = request.GET.get('page_number')
@@ -320,6 +327,7 @@ def ajax_provider_list(request):
 #
 # Petition - Petition
 #
+@login_required(redirect_field_name='account_login')
 def petition_join(request): 
     if request.user.is_authenticated:
         logger.error('Autenticado en el petition add')
@@ -351,6 +359,9 @@ def petition_join(request):
     petition.user=request.user
     petition.save()
     return JsonResponse({'id':petition.id})
+
+
+
 
 
 

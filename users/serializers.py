@@ -1,4 +1,4 @@
-from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following
+from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following    
 from rest_framework import serializers
 
 
