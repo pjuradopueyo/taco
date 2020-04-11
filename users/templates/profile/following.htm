@@ -1,0 +1,39 @@
+{% extends "private/base.html" %}
+{% load static %}
+
+        {% block title %}Taco - Following {% endblock %}
+        <!-- Masthead-->
+        
+        <!-- About section-->
+
+        {% block content %} 
+        <div class="container">
+          <div class="row">
+            {% if following_list %}
+            <div class="row">
+            {% for following in following_list %}
+              <div class="col-xl-3 col-md-6 mb-4">
+                <a href="">
+                  <div class="card border-0 shadow">
+                    {% if place.owner.avatar %}
+                    <img class="card-img-top" src="{{ following.avatar.url }}" alt="User"></a>
+                    {% else %}
+                    <img class="card-img-top" src="{% static 'users/images/default.jpg' %}" alt="Image">
+                    {% endif %}
+                    <div class="card-body text-center">
+                      <h5 class="card-title mb-0">{{ following.get_full_name }}</h5>
+                      <div class="card-text text-black-50"></div>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <p>No hay proveedores en tu zona</p>
+            {% endif %}
+          </div>
+          <!-- /.row -->
+        </div>
+        <!-- /.cont
+          {% endblock %}

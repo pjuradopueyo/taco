@@ -62,6 +62,7 @@ class PetitionNewForm(PetitionForm):
         petition = super(PetitionNewForm, self).save()
         return petition
 
+
 class TacoLoginForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super(TacoLoginForm, self).__init__(*args, **kwargs)
@@ -77,3 +78,25 @@ class TacoSignupForm(SignupForm):
             field.widget.attrs.update({
                 'class': 'form-control'
             })
+
+class PlaceForm(forms.ModelForm): 
+  
+    class Meta: 
+        model = Place 
+        fields = "__all__"
+        exclude = ['owner']
+
+    def __init__(self, *args, **kwargs):
+        super(PlaceForm, self).__init__(*args, **kwargs)
+
+    def save(self):
+        place = super(PlaceForm, self).save()
+        if place.place_main_img:
+            image = Image.open(place.place_main_img)
+            cropped_image = image.crop((0, 0, 350, 350))
+            resized_image = cropped_image.resize((350, 350), Image.ANTIALIAS)
+            resized_image.save(place.place_main_img.path)
+        return place
+
+
+

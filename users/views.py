@@ -9,8 +9,8 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following, CustomUser
-from .forms import ProviderForm, PetitionForm, PetitionNewForm, CustomUserForm
+from .models import Petition, ResponsePetition, Provider, FollowingProvider, Offer, Applause, Following, CustomUser, FollowingPlace, Place, Following
+from .forms import ProviderForm, PetitionForm, PetitionNewForm, CustomUserForm, PlaceForm
 from rest_framework import mixins
 from rest_framework import generics
 # from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
@@ -158,6 +158,92 @@ def PrivatePetitionList(request):
 
 
 #######################################################################
+# Place
+#######################################################################
+
+#
+# Place - Petition
+#
+@login_required(redirect_field_name='account_login')
+def place_add(request): 
+    if request.user.is_authenticated:
+        logger.error('Autenticado en el place add')
+    else:
+        logger.error('No autenticado')
+
+    if request.method == 'POST': 
+ 
+        if request.user.is_authenticated:
+            form = PlaceForm(request.POST, request.FILES) 
+            if form.is_valid(): 
+                logger.error('Place form is valid')
+                result_place = form.save() 
+                result_place.owner=request.user
+                result_place.save()
+                return redirect('index') 
+        else:
+            return redirect('account_login') 
+
+    else:
+        form = PlaceForm() 
+    return render(request, 'private/place_add.html', {'form' : form}) 
+
+#
+# Place - Place
+#
+@login_required(redirect_field_name='account_login')
+def private_place_list(request): 
+
+    following_list = FollowingPlace.objects.filter(
+        user=request.user).values_list(
+            'pk', flat=True).order_by('pk')
+    
+    places_list = Place.objects.filter(
+        Q(pk__in= following_list) | Q(owner=request.user)).order_by('name')
+
+    full_place_list = Place.objects.all().order_by('-name')
+
+    context = {'place_list': places_list,
+        'full_place_list': full_place_list}
+
+
+    return render(request, 'private/places.html', context) 
+
+
+
+
+#######################################################################
+# People
+#######################################################################
+
+#
+# User - people list
+#
+@login_required(redirect_field_name='account_login')
+def private_user(request,pk): 
+    user = get_object_or_404(CustomUser, pk=pk)
+    context = {'person': user}
+    return render(request, 'private/user.html', context) 
+
+#
+# User - people list
+#
+@login_required(redirect_field_name='account_login')
+def private_following_list(request): 
+
+    following_list = Following.objects.filter(
+        user=request.user).order_by('following_to__first_name')
+
+    random_user_list = Following.objects.order_by('user__last_login')[:8]
+
+    context = {'following_list': following_list,
+        'random_user_list': random_user_list}
+
+
+    return render(request, 'private/following.html', context) 
+
+
+#######################################################################
 # Account
 #######################################################################
 
@@ -193,6 +279,26 @@ def my_account(request):
 #######################################################################
 # Provider
 #######################################################################
+
+#
+# Place - Place
+#
+@login_required(redirect_field_name='account_login')
+def private_provider_list(request): 
+
+    following_list = FollowingProvider.objects.filter(
+        user=request.user).values_list(
+            'pk', flat=True).order_by('pk')
+    my_provider_list = Provider.objects.filter(
+        Q(pk__in= following_list) | Q(user=request.user)).order_by('name')
+
+    full_provider_list = Provider.objects.all().order_by('-name')
+
+    context = {'my_provider_list': my_provider_list,
+        'full_provider_list': full_provider_list}
+
+
+    return render(request, 'private/providers.html', context) 
 
 #
 # List - Ajax 

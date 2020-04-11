@@ -37,12 +37,10 @@
                 aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto my-2 my-lg-0">
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">People</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">Business</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">Places</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">Notifications</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#services">My business</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#portfolio">My coupons</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'private_following_list' %}">Following</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'private_provider_list' %}">Business</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'private_place_list' %}">Places</a></li>
+
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'my_account' %}">My account</a></li>
                     {% if user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link js-scroll-trigger"

@@ -37,21 +37,23 @@ class Product(models.Model):
 
 
 class Place(models.Model):
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=500)
+    slug = models.CharField(max_length=500)
     visibility = models.CharField(max_length=25,default="public")
     description = models.TextField(null=True, blank=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True)
-    town = models.CharField(max_length=500, null=True)
-    street = models.CharField(max_length=500, null=True)
-    postal = models.CharField(max_length=500, null=True)
-    google_place = models.CharField(max_length=500, null=True)
-    street_number = models.IntegerField(null=True)
-    floor_number = models.IntegerField(null=True)
-    door_name = models.CharField(max_length=16, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, blank=True)
+    town = models.CharField(max_length=500, null=True, blank=True)
+    street = models.CharField(max_length=500, null=True, blank=True)
+    postal = models.CharField(max_length=500, null=True, blank=True)
+    google_place = models.CharField(max_length=500, null=True, blank=True)
+    street_number = models.IntegerField(null=True, blank=True)
+    floor_number = models.IntegerField(null=True, blank=True)
+    door_name = models.CharField(max_length=16, null=True, blank=True)
     place_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
+    creation_date = models.DateTimeField(default=datetime.now, blank=True)
 
 
 class Provider(models.Model):
@@ -69,22 +71,22 @@ class Provider(models.Model):
         return self.name
 
 class Petition(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=500)
     description = models.TextField(null=True, blank=True)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE, null=True)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, null=True, blank=True)
     creation_date = models.DateTimeField(default=datetime.now, blank=True)
     start_date = models.DateTimeField(default=datetime.now, blank=True)
-    finish_date = models.DateTimeField(null=True)
-    radio = models.IntegerField(null=True)
+    finish_date = models.DateTimeField(null=True, blank=True)
+    radio = models.IntegerField(null=True, blank=True)
     intensity = models.IntegerField(default=50)
     privacy = models.CharField(max_length=15, default='public')
     petition_img = models.ImageField(upload_to='petition/', null=True, blank=True)
-    added_to = models.ForeignKey('self', related_name='added_to_petition', on_delete=models.CASCADE, null=True)
+    added_to = models.ForeignKey('self', related_name='added_to_petition', on_delete=models.CASCADE, null=True, blank=True)
     petition_type = models.CharField(max_length=10,default='petition')
-    answer_to = models.ForeignKey('self', related_name='answer_to_petition', on_delete=models.CASCADE, null=True)
-    provider = models.ForeignKey(Provider, on_delete=models.CASCADE, null=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
+    answer_to = models.ForeignKey('self', related_name='answer_to_petition', on_delete=models.CASCADE, null=True, blank=True)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
     class Meta:
         ordering = ['start_date']
 
