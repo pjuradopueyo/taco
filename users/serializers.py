@@ -1,4 +1,4 @@
-from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following    
+from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following, FollowingPlace, FollowingProvider    
 from rest_framework import serializers
 
 
@@ -55,4 +55,22 @@ class FollowingSerializer(serializers.ModelSerializer):
         read_only_fields = ['user']
     def create(self, validated_data):
         request = Following.objects.create(**validated_data)
+        return request
+
+class FollowingPlaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FollowingPlace
+        fields = "__all__"
+        read_only_fields = ['user']
+    def create(self, validated_data):
+        request = FollowingPlace.objects.create(**validated_data)
+        return request
+
+class FollowingProviderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FollowingProvider
+        fields = "__all__"
+        read_only_fields = ['user']
+    def create(self, validated_data):
+        request = FollowingProvider.objects.create(**validated_data)
         return request

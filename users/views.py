@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from rest_framework import viewsets
 from rest_framework import permissions
-from users.serializers import PetitionSerializer, ResponsePetitionSerializer, ProviderSerializer, OfferSerializer, ApplauseSerializer, FollowingSerializer
+from users.serializers import PetitionSerializer, ResponsePetitionSerializer, ProviderSerializer, OfferSerializer, ApplauseSerializer, FollowingSerializer, FollowingPlaceSerializer, FollowingProviderSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -139,11 +139,20 @@ def PrivatePetitionList(request):
     following_list = Following.objects.filter(
         user=request.user).values_list(
             'following_to', flat=True).order_by('following_to')
-    logger.error('Following ' + str(following_list))
+
+    following_list_place = FollowingPlace.objects.filter(
+        user=request.user).values_list(
+            'place', flat=True).order_by('pk')
+
+    following_list_provider = FollowingProvider.objects.filter(
+        user=request.user).values_list(
+            'provider', flat=True).order_by('pk')
+
+    logger.error('Following ' + str(following_list_provider))
 
     
     petition_list = Petition.objects.filter(
-        Q(user__in= following_list) | Q(user=request.user)).annotate(
+        Q(user__in= following_list) | Q(place__in= following_list_place) | Q(provider__in= following_list_provider) | Q(user=request.user)).annotate(
             num_joins=Count('added_to_petition')).annotate(
                 num_offers=Count('answer_to_petition')).annotate(
                     num_applauses=Count('applause')).annotate( i_joined=Count(Case(
@@ -196,7 +205,7 @@ def private_place_list(request):
 
     following_list = FollowingPlace.objects.filter(
         user=request.user).values_list(
-            'pk', flat=True).order_by('pk')
+            'place', flat=True).order_by('pk')
     
     places_list = Place.objects.filter(
         Q(pk__in= following_list) | Q(owner=request.user)).order_by('name')
@@ -294,9 +303,14 @@ def private_provider_list(request):
 
     following_list = FollowingProvider.objects.filter(
         user=request.user).values_list(
-            'pk', flat=True).order_by('pk')
+            'provider', flat=True).order_by('pk')
+
+    logger.error('Providers id' + str(following_list))
+
     my_provider_list = Provider.objects.filter(
         Q(pk__in= following_list) | Q(user=request.user)).order_by('name')
+
+    logger.error('Providers full' + str(my_provider_list))
 
     full_provider_list = Provider.objects.all().order_by('-name')
 
@@ -615,6 +629,82 @@ class FollowingDetail(mixins.RetrieveModelMixin,
                     generics.GenericAPIView):
     queryset = Following.objects.all()
     serializer_class = FollowingSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+#
+# Contribtions
+#
+# FollowingPlace views
+class FollowingPlaceList(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  generics.GenericAPIView):
+    queryset = FollowingPlace.objects.all()
+    serializer_class = FollowingPlaceSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        serializer = FollowingPlaceSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FollowingPlaceDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    queryset = FollowingPlace.objects.all()
+    serializer_class = FollowingPlaceSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+#
+# Contribtions
+#
+# FollowingPlace views
+class FollowingProviderList(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  generics.GenericAPIView):
+    queryset = FollowingProvider.objects.all()
+    serializer_class = FollowingProviderSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        serializer = FollowingProviderSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FollowingProviderDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    queryset = FollowingProvider.objects.all()
+    serializer_class = FollowingProviderSerializer
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)

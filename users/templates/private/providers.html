@@ -7,7 +7,7 @@
 <div class="container">
 
 
-    {% if provider_list %}
+    {% if my_provider_list %}
     <div class="row">
         {% for provider in my_provider_list %}
         <div class="col-lg-6 offset-lg-3">
@@ -196,10 +196,10 @@
                     <div class="cardbox-comments">
 
                         <ul>
-
-                                <li class="join btn btn-info" onclick="javascript:leave('{{ provider.id }}')">Unfollow</li>
-
-
+                            {% if provider.user.id != user.id%}
+                                <li class="join btn btn-info follow_btn_{{provider.id}}" onclick="javascript:follow('{{ provider.id }}')">Follow</li>
+                                <li class="join btn btn-info unfollow_btn_{{provider.id}}" onclick="javascript:leave('{{ provider.id }}')">Unfollow</li>
+                            {% endif %}
                         </ul>
 
                         <!--/. Search -->
@@ -220,3 +220,34 @@
 
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    function follow(provider) {
+        $(".follow_btn_"+provider).hide();
+        $.ajax({
+            url: '{% url "following_provider" %}',
+            data: {
+                'provider': provider
+            },
+            type: "POST",
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            dataType: 'json',
+            success: function (data) {
+                $("span#count-follow").html(parseInt($("span#count-follow").html()) + 1)
+                console.log("Enviado following provider");
+                $(".unfollow_btn_"+provider).removeClass("invisible");
+
+            }
+        });
+    }
+
+    $('.follow').click(function () {
+        follow();
+        $('.follow').off();
+    });
+
+</script>
+{% endblock extra_js %}

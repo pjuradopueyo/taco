@@ -1,8 +1,10 @@
 {% extends "private/base.html" %}
 {% load static %}
 {% block content %}
+{% if form.avatar.value %}
 <img class="img-fluid" src="{{ form.avatar.value.url }}" alt="Image">
-   
+{% endif %}
+
     <form method = "post" enctype="multipart/form-data"> 
         {% csrf_token %} 
         {{ form.as_p }} 

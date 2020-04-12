@@ -206,11 +206,8 @@
 
                         <ul>
                             {% if place.owner.id != user.id%}
-                                {% if true %}
-                                <li class="join btn btn-info" onclick="javascript:join('{{ place.id }}')">Follow</li>
-                                {% else %}
-                                <li class="join btn btn-info" onclick="javascript:leave('{{ place.id }}')">Unfollow</li>
-                                {% endif %}
+                                <li class="join btn btn-info follow_btn_{{place.id}}" onclick="javascript:follow('{{ place.id }}')">Follow</li>
+                                <li class="join btn btn-info unfollow_btn_{{place.id}}" onclick="javascript:leave('{{ place.id }}')">Unfollow</li>
                             {% endif %}
 
                         </ul>
@@ -236,3 +233,35 @@
 
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    function follow(place) {
+        $(".follow_btn_"+place).hide();
+        $.ajax({
+            url: '{% url "following_place" %}',
+            data: {
+                'place': place
+            },
+            type: "POST",
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            dataType: 'json',
+            success: function (data) {
+                $("span#count-follow").html(parseInt($("span#count-follow").html()) + 1)
+                console.log("Enviado following place");
+                $(".unfollow_btn_"+place).removeClass("invisible");
+                if (data.is_taken) {
+                }
+            }
+        });
+    }
+
+    $('.follow').click(function () {
+        follow();
+        $('.follow').off();
+    });
+
+</script>
+{% endblock extra_js %}

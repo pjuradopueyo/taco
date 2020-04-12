@@ -42,16 +42,36 @@
                         <!--/ dropdown -->
                         <div class="media m-0">
                             <div class="d-flex mr-3">
+
                                 <a href="">
-                                    {% if petition.user.avatar %}
-                                    <img class="img-fluid rounded-circle" src="{{ petition.user.avatar.url }}" alt="User"></a>
+                                    {% if petition.provider %}
+                                        {% if petition.user.avatar %}
+                                        <img class="img-fluid rounded-circle" src="{{ petition.user.avatar.url }}" alt="User">
+                                        {% else %}
+                                        <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}" alt="Image">
+                                        {% endif %}
                                     {% else %}
-                                    <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}" alt="Image">
+                                        {% if petition.provider.provider_main_image %}
+                                        <img class="img-fluid rounded-circle" src="{{ petition.user.avatar.url }}" alt="User">
+                                        {% else %}
+                                        <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}" alt="Image">
+                                        {% endif %}
                                     {% endif %}
+                                </a>
                             </div>
                             <div class="media-body">
-                                <p class="m-0">{{petition.user.get_full_name}} - {{petition.user.id}}</p>
-                                <small><span><i class="icon ion-md-pin"></i> Nairobi, Kenya - Petition {{petition.id}}</span></small>
+                                {% if petition.provider %}
+                                <p class="m-0">{{petition.provider.name}}</p>
+                                {% else %}
+                                <p class="m-0">{{petition.user.get_full_name}}</p>
+                                {% endif %}
+                                <small><span><i class="icon ion-md-pin"></i> 
+                                    {% if petition.place %}
+                                    {{petition.place.name}}
+                                    {% else %}
+                                    No location
+                                    {% endif %}
+                                </span></small>
                                 <small><span><i class="icon ion-md-time"></i>{{ petition.start_date|timesince }}</span></small>
                             </div>
                         </div>
