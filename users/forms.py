@@ -16,7 +16,7 @@ class CustomUserForm(forms.ModelForm):
     def save(self):
         user = super(CustomUserForm, self).save()
         image = Image.open(user.avatar)
-        cropped_image = image.crop((0, 0, 650, 350))
+        cropped_image = image.crop((0, 0, 300, 300))
         resized_image = cropped_image.resize((300, 300), Image.ANTIALIAS)
         resized_image.save(user.avatar.path)
 
@@ -46,8 +46,8 @@ class PetitionForm(forms.ModelForm):
         petition = super(PetitionForm, self).save()
         if petition.petition_img:
             image = Image.open(petition.petition_img)
-            cropped_image = image.crop((0, 0, 350, 350))
-            resized_image = cropped_image.resize((350, 350), Image.ANTIALIAS)
+            cropped_image = image.crop((0, 0, 650, 350))
+            resized_image = cropped_image.resize((650, 350), Image.ANTIALIAS)
             resized_image.save(petition.petition_img.path)
         return petition
 
@@ -93,8 +93,8 @@ class PlaceForm(forms.ModelForm):
         place = super(PlaceForm, self).save()
         if place.place_main_img:
             image = Image.open(place.place_main_img)
-            cropped_image = image.crop((0, 0, 350, 350))
-            resized_image = cropped_image.resize((350, 350), Image.ANTIALIAS)
+            cropped_image = image.crop((0, 0, 650, 350))
+            resized_image = cropped_image.resize((650, 350), Image.ANTIALIAS)
             resized_image.save(place.place_main_img.path)
         return place
 
