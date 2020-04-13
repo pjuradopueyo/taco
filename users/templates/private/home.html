@@ -1,0 +1,122 @@
+{% extends "private/base.html" %}
+{% load static %}
+
+{% block title %}Taco - Share and find{% endblock %}
+{% block content %}
+<div class="container feed-content"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    var claps = 1;
+    var maxTime;
+    var clapTimer;
+    var init;
+
+    $( document ).ready(function() {
+        $.ajax({
+            url: '{% url "private_petition_list" %}',
+            data: { 'page_size': '12', 'page_number': '1' },
+            type: "GET",
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            dataType: 'html',
+            success: function (data) {
+                console.log("recibida página ");
+                $(".feed-content").append(data);
+            }
+        });
+    });
+
+
+    function join(petition_id) {
+        $.ajax({
+            url: '{% url "petition_join" %}',
+            data: { 'petition_id': petition_id },
+            type: "POST",
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log("Enviado join " + $("span#count-join").html());
+                $("span.joined_"+petition_id).html(parseInt($("span.joined_"+petition_id).html()) + 1)
+                if (data.is_taken) {
+                    alert("A user with this username already exists.");
+                }
+            }
+        });
+    }
+
+    function sendApplause(petition_id) {
+        clearTimeout(clapTimer);
+        clearTimeout(maxTime);
+        var totalTime = parseInt((Date.now() - init) / 1000);
+
+        console.log(claps + " - " + totalTime);
+        $('*[data-petition="'+petition_id+'"]').off();
+        $('*[data-petition="'+petition_id+'"]').removeClass("clap");
+        $.ajax({
+            url: '{% url "applauses" %}',
+            data: {
+                'petition': petition_id,
+                'claps': claps,
+                'duration': totalTime,
+                'intensisty': '50'
+            },
+            type: "POST",
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            dataType: 'json',
+            success: function (data) {
+                $("span.applause_"+petition_id).html(parseInt($("span.applause_"+petition_id).html()) + 1)
+            }
+        });
+    }
+
+
+
+    $(document).on("click", '.clap', function(event) { 
+        petition_id = $(this).data("petition");
+        clearTimeout(clapTimer);
+        if (claps == 1) {
+            init = Date.now();
+            maxTime = setTimeout(sendApplause, 20000, petition_id);
+        }
+        claps += 1;
+        clapTimer = setTimeout(sendApplause, 5000, petition_id);
+        console.log(claps);
+    });
+
+
+
+    function follow() {
+
+        $.ajax({
+            url: '{% url "following" %}',
+            data: {
+                'following_to': '{{ petition.user.id }}'
+            },
+            type: "POST",
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            dataType: 'json',
+            success: function (data) {
+                $("span#count-follow").html(parseInt($("span#count-follow").html()) + 1)
+                console.log("Enviado following");
+                if (data.is_taken) {
+                }
+            }
+        });
+    }
+
+    $('.follow').click(function () {
+        follow();
+        $('.follow').off();
+    });
+
+</script>
+{% endblock extra_js %}

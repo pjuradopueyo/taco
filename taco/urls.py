@@ -26,6 +26,7 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 urlpatterns = [
     path('', views.index),
+    path('home', views.home, name='home'),
     path('users/', include('users.urls')),
     path('provider/<int:provider_id>/', views.provider, name='provider'),
     path('providers/', views.latest_provider_list,name='latest_provider_list'),
@@ -41,7 +42,7 @@ urlpatterns = [
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     url(r'^accounts/', include('allauth.urls')),
-    path('private/petitions/', views.PrivatePetitionList,name='private_petition_list'),
+    path('private/petitions/', views.private_petition_list,name='private_petition_list'),
     path('private/myaccount', views.my_account, name = 'my_account'),
     path('private/places/', views.private_place_list,name='private_place_list'),
     path('private/place/add', views.place_add, name = 'place_add'),

@@ -20,6 +20,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Case, When, IntegerField
+from django.template.loader import render_to_string
+
 
 import json
 import logging
@@ -48,7 +50,7 @@ def base_layout(request):
 def index(request):
 
     if request.user.is_authenticated:
-        return redirect('private_petition_list') 
+        return redirect('home') 
 
     latest_petition_list = Petition.objects.order_by('-start_date')[:8]
     latest_provider_list = Provider.objects.order_by('-start_date')[:6]
@@ -57,6 +59,11 @@ def index(request):
     'latest_provider_list': latest_provider_list,
     'latest_offer_list': latest_offer_list}
     return render(request, 'users/index.html', context)
+
+@login_required(redirect_field_name='account_login')
+def home(request):
+
+    return render(request, 'private/home.html')
 
 #######################################################################
 # Provider
@@ -130,11 +137,10 @@ def petition_add(request,petition_type):
 # Petition - Petition
 #
 @login_required(redirect_field_name='account_login')
-def PrivatePetitionList(request): 
-    if request.user.is_authenticated:
-        logger.error('Autenticado en el petition add')
-    else:
-        logger.error('No autenticado')
+def private_petition_list(request):
+
+    page_size = request.GET.get('page_size','10')
+    page_number = request.GET.get('page_number','1')
 
     following_list = Following.objects.filter(
         user=request.user).values_list(
@@ -151,7 +157,7 @@ def PrivatePetitionList(request):
     logger.error('Following ' + str(following_list_provider))
 
     
-    petition_list = Petition.objects.filter(
+    petition_full_list = Petition.objects.filter(
         Q(user__in= following_list) | Q(place__in= following_list_place) | Q(provider__in= following_list_provider) | Q(user=request.user)).annotate(
             num_joins=Count('added_to_petition')).annotate(
                 num_offers=Count('answer_to_petition')).annotate(
@@ -159,11 +165,17 @@ def PrivatePetitionList(request):
                         When(added_to_petition__user__id=request.user.id, then=1),
                         output_field=IntegerField(),
                         ))).order_by('-start_date')
+
+    paginator = Paginator(petition_full_list, page_size) # Show 25 contacts per page
+    petition_list = paginator.get_page(page_number)
+
     logger.error('Petition' + str(petition_list))
     context = {'petition_list': petition_list}
 
 
     return render(request, 'private/petitions.html', context) 
+
+
 
 
 #######################################################################
