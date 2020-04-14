@@ -1,14 +1,6 @@
 {% load static %}
 
-<div class="row">
-    <div class="col-lg-6 offset-lg-3">
 
-        <a class="btn btn-light btn-xl" href="{% url 'petition_add' 'petition' %}">Create a
-            petition</a>&nbsp;&nbsp;<a class="btn btn-light btn-xl" href="{% url 'petition_add' 'offer' %}">Create
-            an offer</a>
-
-    </div>
-</div>
 
 {% if petition_list %}
 <div class="row">

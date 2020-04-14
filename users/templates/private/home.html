@@ -3,6 +3,15 @@
 
 {% block title %}Taco - Share and find{% endblock %}
 {% block content %}
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+
+        <a class="btn btn-light btn-xl" href="{% url 'petition_add' 'petition' %}">Create a
+            petition</a>&nbsp;&nbsp;<a class="btn btn-light btn-xl" href="{% url 'petition_add' 'offer' %}">Create
+            an offer</a>
+
+    </div>
+</div>
 <div class="container feed-content"></div>
 {% endblock %}
 
@@ -12,17 +21,22 @@
     var maxTime;
     var clapTimer;
     var init;
+    var page = 1;
 
     $( document ).ready(function() {
+        console.log("carga inicial "+page);
         $.ajax({
             url: '{% url "private_petition_list" %}',
-            data: { 'page_size': '12', 'page_number': '1' },
+            data: { 'page_size': '12', 'page_number': page },
             type: "GET",
             beforeSend: function (xhr, settings) {
                 xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
             },
             dataType: 'html',
             success: function (data) {
+                
+                enableScroll();
+                page=page+1;
                 console.log("recibida página ");
                 $(".feed-content").append(data);
             }
@@ -40,6 +54,7 @@
             },
             dataType: 'json',
             success: function (data) {
+                
                 console.log("Enviado join " + $("span#count-join").html());
                 $("span.joined_"+petition_id).html(parseInt($("span.joined_"+petition_id).html()) + 1)
                 if (data.is_taken) {
@@ -77,6 +92,32 @@
     }
 
 
+    function enableScroll() {
+        $(window).scroll(function() {
+            if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                console.log("Sending page "+page);
+                $.ajax({
+                    url: '{% url "private_petition_list" %}',
+                    data: { 'page_size': '12', 'page_number': page },
+                    type: "GET",
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    },
+                    dataType: 'html',
+                    success: function (data) {
+                        if (data=="") {
+                            $(window).off("scroll");
+                            console.log("Página vacia");
+                        } else {
+                            page++;
+                            console.log("recibida página ");
+                            $(".feed-content").append(data);
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     $(document).on("click", '.clap', function(event) { 
         petition_id = $(this).data("petition");

@@ -16,7 +16,7 @@ from rest_framework import generics
 # from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Case, When, IntegerField
@@ -154,7 +154,7 @@ def private_petition_list(request):
         user=request.user).values_list(
             'provider', flat=True).order_by('pk')
 
-    logger.error('Following ' + str(following_list_provider))
+    
 
     
     petition_full_list = Petition.objects.filter(
@@ -167,9 +167,17 @@ def private_petition_list(request):
                         ))).order_by('-start_date')
 
     paginator = Paginator(petition_full_list, page_size) # Show 25 contacts per page
-    petition_list = paginator.get_page(page_number)
+    if int(page_number) > paginator.num_pages:
+        return HttpResponse('')
 
-    logger.error('Petition' + str(petition_list))
+    logger.error('Asking for page  ' + page_number + ' of ' + str(paginator.num_pages))
+    petition_list = paginator.get_page(page_number)
+    logger.error('Petition list ' + str(petition_list) + ' with size ' + str(petition_full_list.count()))
+
+    
+       
+
+
     context = {'petition_list': petition_list}
 
 
