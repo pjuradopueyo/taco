@@ -24,6 +24,11 @@
     var page = 1;
 
     $( document ).ready(function() {
+
+        $('[data-toggle="popover"]').popover({
+        });
+
+
         console.log("carga inicial "+page);
         $.ajax({
             url: '{% url "private_petition_list" %}',

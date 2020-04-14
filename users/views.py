@@ -164,6 +164,9 @@ def private_petition_list(request):
                     num_applauses=Count('applause')).annotate( i_joined=Count(Case(
                         When(added_to_petition__user__id=request.user.id, then=1),
                         output_field=IntegerField(),
+                        ))).annotate( i_clapped=Count(Case(
+                        When(applause__user__id=request.user.id, then=1),
+                        output_field=IntegerField(),
                         ))).order_by('-start_date')
 
     paginator = Paginator(petition_full_list, page_size) # Show 25 contacts per page

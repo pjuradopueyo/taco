@@ -6,21 +6,34 @@
 <div class="row">
     {% for petition in petition_list %}
     <div class="col-lg-6 offset-lg-3">
-        <a href="{% url 'petition' petition.id %}">
+
             <div class="cardbox shadow-lg bg-white">
 
                 <div class="cardbox-heading">
                     <!-- START dropdown-->
                     <div class="dropdown float-right">
-                        <button class="btn btn-flat btn-flat-icon" type="button" data-toggle="dropdown"
+                        <button class="btn btn-flat btn-flat-icon " type="button" data-toggle="dropdown"
                             aria-expanded="false">
                             <em class="fa fa-ellipsis-h"></em>
                         </button>
                         <div class="dropdown-menu dropdown-scale dropdown-menu-right" role="menu"
                             style="position: absolute; transform: translate3d(-136px, 28px, 0px); top: 0px; left: 0px; will-change: transform;">
-                            <a class="dropdown-item" href="#">Hide post</a>
-                            <a class="dropdown-item" href="#">Stop following</a>
-                            <a class="dropdown-item" href="#">Report</a>
+                            {% if petition.i_clapped == 0 %}You clapped!{% endif %}
+                            <ul>
+                                {% if petition.user.id != user.id%}
+                                {% if petition.i_joined == 0 %}
+                                <li class="join btn btn-info" onclick="javascript:join('{{ petition.id }}')">Join -
+                                    {{petition.i_joined}}</li>
+                                {% else %}
+                                <li class="join btn btn-info" onclick="javascript:leave('{{ petition.id }}')">Leave -
+                                    {{petition.i_joined}}</li>
+                                {% endif %}
+                                <li class="offer btn btn-info"><a
+                                        href="{% url 'petition_add' 'offer' %}?petition={{petition.id}}">Offer</a></li>
+                                {% endif %}
+                                <li class="offer btn btn-info"><a
+                                    href="#">Report</a></li>
+                            </ul>
                         </div>
                     </div>
                     <!--/ dropdown -->
@@ -66,7 +79,7 @@
                 </div>
                 <!--/ cardbox-heading -->
 
-                <div class="cardbox-item clap" data-petition="{{ petition.id }}">
+                <div class="cardbox-item {% if petition.i_clapped == 0 %}clap{% endif %}" data-petition="{{ petition.id }}">
                     {% if petition.petition_img %}
                     <img class="img-fluid" src="{{ petition.petition_img.url }}" alt="Image">
                     {% else %}
@@ -74,10 +87,12 @@
                     {% endif %}
                 </div>
                 <!--/ cardbox-item -->
-                <div class="cardbox-title">
-                    <span class="mb-0">{{ petition.title }}</span>
-                    <p class="text-muted">{{ petition.description|truncatewords:25 }}</p>
-                </div>
+                <a href="{% url 'petition' petition.id %}">
+                    <div class="cardbox-title">
+                        <span class="mb-0">{{ petition.title }}</span>
+                        <p class="text-muted">{{ petition.description|truncatewords:25 }}</p>
+                    </div>
+                </a>
                 <div class="cardbox-base">
                     <ul class="float-right">
                         <li><a><i class="fa fa-comments"></i></a></li>
@@ -108,30 +123,12 @@
                 <div class="offer-indicator">Offer</div>
                 {% endif %}
                 <div class="cardbox-comments">
-
-
-                    <ul>
-                        {% if petition.user.id != user.id%}
-                        {% if petition.i_joined == 0 %}
-                        <li class="join btn btn-info" onclick="javascript:join('{{ petition.id }}')">Join -
-                            {{petition.i_joined}}</li>
-                        {% else %}
-                        <li class="join btn btn-info" onclick="javascript:leave('{{ petition.id }}')">Leave -
-                            {{petition.i_joined}}</li>
-                        {% endif %}
-                        <li class="offer btn btn-info"><a
-                                href="{% url 'petition_add' 'offer' %}?petition={{petition.id}}">Offer</a></li>
-                        {% endif %}
-                        <li class="clap btn btn-info" data-petition="{{ petition.id }}">Applause</li>
-                        
-                    </ul>
-
                     <!--/. Search -->
                 </div>
                 <!--/ cardbox-like -->
             </div>
             <!--/ cardbox -->
-        </a>
+
     </div>
     <!--/ col-lg-6 -->
 
