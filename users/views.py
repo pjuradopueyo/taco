@@ -175,14 +175,9 @@ def private_petition_list(request):
 
     logger.error('Asking for page  ' + page_number + ' of ' + str(paginator.num_pages))
     petition_list = paginator.get_page(page_number)
-    logger.error('Petition list ' + str(petition_list) + ' with size ' + str(petition_full_list.count()))
-
-    
-       
 
 
     context = {'petition_list': petition_list}
-
 
     return render(request, 'private/petitions.html', context) 
 
@@ -254,7 +249,17 @@ def private_place_list(request):
 @login_required(redirect_field_name='account_login')
 def private_user(request,pk): 
     user = get_object_or_404(CustomUser, pk=pk)
-    context = {'person': user}
+    following = Following.objects.filter(user=user).count()
+    followers = Following.objects.filter(following_to=user).count()
+    i_follow = Following.objects.filter(user=request.user, following_to=user).count()
+    petitions_original = Petition.objects.filter(user=user, added_to__isnull=True).count()
+    petitions_joins = Petition.objects.filter(user=user, added_to__isnull=False).count()
+    context = {'person': user,
+                'following': following,
+                'followers': followers,
+                'petitions_original': petitions_original,
+                'petitions_joins': petitions_joins,
+                "i_follow": i_follow}
     return render(request, 'private/user.html', context) 
 
 #
@@ -639,8 +644,6 @@ class FollowingList(mixins.ListModelMixin,
 
     def post(self, request, *args, **kwargs):
         serializer = FollowingSerializer(data=request.data)
-        
-        logger.error('Autenticado '+json.dumps(request.data))
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

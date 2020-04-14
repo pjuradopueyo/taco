@@ -189,6 +189,10 @@ class Following(models.Model):
 
     class Meta:
         ordering = ['petition_date']
+        db_table = 'users_following'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'following_to'], name='unique following')
+        ]
 
 class FollowingProvider(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)

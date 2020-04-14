@@ -1,5 +1,6 @@
 from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following, FollowingPlace, FollowingProvider    
 from rest_framework import serializers
+from django.db import IntegrityError
 
 
 
@@ -54,8 +55,12 @@ class FollowingSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ['user']
     def create(self, validated_data):
-        request = Following.objects.create(**validated_data)
-        return request
+        try:
+            request = Following.objects.create(**validated_data)
+            return request
+        except IntegrityError as e: 
+            return "error"
+
 
 class FollowingPlaceSerializer(serializers.ModelSerializer):
     class Meta:

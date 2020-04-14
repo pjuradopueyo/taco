@@ -31,7 +31,7 @@
                                 <li class="offer btn btn-info"><a
                                         href="{% url 'petition_add' 'offer' %}?petition={{petition.id}}">Offer</a></li>
                                 {% endif %}
-                                <li class="offer btn btn-info"><a
+                                <li class=" btn btn-info"><a
                                     href="#">Report</a></li>
                             </ul>
                         </div>
@@ -40,23 +40,27 @@
                     <div class="media m-0">
                         <div class="d-flex mr-3" >
 
-                            <a href="">
+                            
                                 {% if petition.provider %}
-                                {% if petition.user.avatar %}
-                                <img class="img-fluid rounded-circle" src="{{ petition.user.avatar.url }}" alt="User">
+                                    <a href="{% url 'private_place_list' %}">
+                                        {% if petition.provider.provider_main_image%}
+                                        <img class="img-fluid rounded-circle" src="{{ petition.provider.provider_main_image.url  }}" alt="User">
+                                        {% else %}
+                                        <img class="img-fluid rounded-circle" src="{% static 'users/images/london.jpg' %}"
+                                            alt="Image">
+                                        {% endif %}
+                                    </a>
                                 {% else %}
-                                <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}"
-                                    alt="Image">
+                                    <a href="{% url 'private_user' petition.user.id %}">
+                                        {% if petition.user.avatar %}
+                                        <img class="img-fluid rounded-circle" src="{{ petition.user.avatar.url }}" alt="User">
+                                        {% else %}
+                                        <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}"
+                                            alt="Image">
+                                        {% endif %}
+                                    </a>
                                 {% endif %}
-                                {% else %}
-                                {% if petition.provider.provider_main_image %}
-                                <img class="img-fluid rounded-circle" src="{{ petition.user.avatar.url }}" alt="User">
-                                {% else %}
-                                <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}"
-                                    alt="Image">
-                                {% endif %}
-                                {% endif %}
-                            </a>
+                            
                         </div>
                         <div class="media-body">
                             {% if petition.provider %}
