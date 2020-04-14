@@ -25,7 +25,7 @@
                     </div>
                     <!--/ dropdown -->
                     <div class="media m-0">
-                        <div class="d-flex mr-3">
+                        <div class="d-flex mr-3" >
 
                             <a href="">
                                 {% if petition.provider %}
@@ -66,7 +66,7 @@
                 </div>
                 <!--/ cardbox-heading -->
 
-                <div class="cardbox-item">
+                <div class="cardbox-item clap" data-petition="{{ petition.id }}">
                     {% if petition.petition_img %}
                     <img class="img-fluid" src="{{ petition.petition_img.url }}" alt="Image">
                     {% else %}
@@ -81,11 +81,10 @@
                 <div class="cardbox-base">
                     <ul class="float-right">
                         <li><a><i class="fa fa-comments"></i></a></li>
-                        <li><a><em class="mr-5"><span
-                                        class="applause_{{petition.id}}">{{ petition.num_applauses}}</span></em></a>
+                        <li><a><em class="mr-5">Claps <span class="applause_{{petition.id}}">{{ petition.num_applauses}}</span></em></a>
                         </li>
                         <li><a><i class="fa fa-share-alt"></i></a></li>
-                        <li><a><em class="mr-3"><span>{{ petition.num_offers}}</span></em></a></li>
+                        <li><a><em class="mr-3">Offers <span>{{ petition.num_offers}}</span></em></a></li>
                     </ul>
                     <ul>
                         <li><a><i class="fa fa-thumbs-up"></i></a></li>
@@ -101,12 +100,15 @@
                         <li><a href="#"><img
                                     src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/2.jpg"
                                     class="img-fluid rounded-circle" alt="User"></a></li>
-                        <li><a><span class="joined_{{ petition.id }}">{{ petition.num_joins }}</span> joined
-                                {{petition.user.first_name}}</a></li>
+                        <li><a><span class="joined_{{ petition.id }}">{{ petition.num_joins }}</span><span class="ml-0"> joined {{petition.user.first_name}}</span></a></li>
                     </ul>
                 </div>
                 <!--/ cardbox-base -->
+                {% if petition.petition_type == 'offer' %}
+                <div class="offer-indicator">Offer</div>
+                {% endif %}
                 <div class="cardbox-comments">
+
 
                     <ul>
                         {% if petition.user.id != user.id%}
@@ -121,6 +123,7 @@
                                 href="{% url 'petition_add' 'offer' %}?petition={{petition.id}}">Offer</a></li>
                         {% endif %}
                         <li class="clap btn btn-info" data-petition="{{ petition.id }}">Applause</li>
+                        
                     </ul>
 
                     <!--/. Search -->
