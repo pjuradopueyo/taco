@@ -224,13 +224,23 @@ def private_place_list(request):
     following_list = FollowingPlace.objects.filter(
         user=request.user).values_list(
             'place', flat=True).order_by('pk')
-    
-    places_list = Place.objects.filter(
-        Q(pk__in= following_list) | Q(owner=request.user)).order_by('name')
 
-    full_place_list = Place.objects.all().order_by('-name')
+    logger.error('Places id ' + str(following_list))
 
-    context = {'place_list': places_list,
+    my_place_list = Place.objects.filter(
+        Q(pk__in=following_list) | Q(owner=request.user)).order_by('owner').annotate(i_follow=Count(Case(
+                        When(followingplace__user__id=request.user.id, then=1)))).annotate(followers=Count("followingplace"))
+
+    # providers_ids = my_provider_list.values_list('id', flat=True)
+    logger.error('Place mine ' + str(my_place_list))
+
+    full_place_list = Place.objects.exclude(
+        Q(pk__in=following_list) | Q(owner=request.user)).order_by('-name').annotate(i_follow=Count(Case(
+                        When(followingplace__user__id=request.user.id, then=1))))[:8]
+
+    logger.error('Place full ' + str(full_place_list))
+
+    context = {'my_place_list': my_place_list,
         'full_place_list': full_place_list}
 
 

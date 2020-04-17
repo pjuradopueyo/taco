@@ -12,9 +12,9 @@
             <a class="btn btn-light btn-xl" href="{% url 'place_add' %}">Add a place</a>&nbsp;&nbsp;
         </div>
     </div>
-    {% if place_list %}
+    {% if my_place_list %}
     <div class="row">
-        {% for place in place_list %}
+        {% for place in my_place_list %}
         <div class="col-lg-6 offset-lg-3">
             <a href="#">
                 <div class="cardbox shadow-lg bg-white">
@@ -94,11 +94,7 @@
 
                         <ul>
                             {% if place.owner.id != user.id%}
-                                {% if true %}
-                                <li class="join btn btn-info" onclick="javascript:join('{{ place.id }}')">Follow</li>
-                                {% else %}
-                                <li class="join btn btn-info" onclick="javascript:leave('{{ place.id }}')">Unfollow</li>
-                                {% endif %}
+                            <div class="follow_btn follow_btn_{{place.id}}" onclick="javascript:follow('{{ place.id }}')">{% if place.i_follow > 0 %} Unfollow{% else %}Follow{% endif %}</div>
                             {% endif %}
 
                         </ul>
@@ -206,8 +202,7 @@
 
                         <ul>
                             {% if place.owner.id != user.id%}
-                                <li class="join btn btn-info follow_btn_{{place.id}}" onclick="javascript:follow('{{ place.id }}')">Follow</li>
-                                <li class="join btn btn-info unfollow_btn_{{place.id}}" onclick="javascript:leave('{{ place.id }}')">Unfollow</li>
+                            <div class="follow_btn follow_btn_{{place.id}}" onclick="javascript:follow('{{ place.id }}')">{% if place.i_follow > 0 %} Unfollow{% else %}Follow{% endif %}</div>
                             {% endif %}
 
                         </ul>
@@ -237,7 +232,6 @@
 {% block extra_js %}
 <script>
     function follow(place) {
-        $(".follow_btn_"+place).hide();
         $.ajax({
             url: '{% url "following_place" %}',
             data: {
@@ -248,11 +242,12 @@
                 xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
             },
             dataType: 'json',
-            success: function (data) {
-                $("span#count-follow").html(parseInt($("span#count-follow").html()) + 1)
-                console.log("Enviado following place");
-                $(".unfollow_btn_"+place).removeClass("invisible");
-                if (data.is_taken) {
+            success: function (data, textStatus, xhr) {
+                if (xhr.status === 201) {
+                    $(".follow_btn_"+place).html("Unfollow");
+                }
+                else {
+                    $(".follow_btn_"+place).html("Follow");
                 }
             }
         });
