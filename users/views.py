@@ -182,6 +182,28 @@ def private_petition_list(request):
     return render(request, 'private/petitions.html', context) 
 
 
+#
+# Petition - Petition
+#
+@login_required(redirect_field_name='account_login')
+def private_petition(request,pk):
+
+
+    petition = Petition.objects.get(pk=pk)
+
+    petition_joins = Petition.objects.filter(added_to_petition=petition).count()
+    applauses = Applause.objects.filter(petition=petition).count()
+    offers = Petition.objects.filter(answer_to_petition=petition).count()
+
+    context = {'petition': petition,
+    'petition_joins': petition_joins,
+    'applauses': applauses,
+    'offers': offers}
+
+    return render(request, 'private/petition.html', context) 
+
+
+
 
 
 #######################################################################

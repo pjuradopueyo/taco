@@ -43,6 +43,7 @@ urlpatterns = [
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     url(r'^accounts/', include('allauth.urls')),
     path('private/petitions/', views.private_petition_list,name='private_petition_list'),
+    path('private/petition/<int:pk>', views.private_petition,name='private_petition'),
     path('private/myaccount', views.my_account, name = 'my_account'),
     path('private/places/', views.private_place_list,name='private_place_list'),
     path('private/place/add', views.place_add, name = 'place_add'),

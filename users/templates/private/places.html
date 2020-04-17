@@ -38,15 +38,19 @@
                             <div class="d-flex mr-3">
                                 <a href="">
                                     {% if place.owner.avatar %}
-                                    <img class="img-fluid rounded-circle" src="{{ place.owner.avatar.url }}" alt="User"></a>
-                                    {% else %}
-                                    <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}" alt="Image">
-                                    {% endif %}
+                                    <img class="img-fluid rounded-circle" src="{{ place.owner.avatar.url }}"
+                                        alt="User"></a>
+                                {% else %}
+                                <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}"
+                                    alt="Image">
+                                {% endif %}
                             </div>
                             <div class="media-body">
                                 <p class="m-0">{{place.owner.get_full_name}} - {{place.owner.id}}</p>
-                                <small><span><i class="icon ion-md-pin"></i> Nairobi, Kenya - Petition {{place.id}}</span></small>
-                                <small><span><i class="icon ion-md-time"></i>{{ place.creation_date|timesince }}</span></small>
+                                <small><span><i class="icon ion-md-pin"></i> Nairobi, Kenya - Petition
+                                        {{place.id}}</span></small>
+                                <small><span><i
+                                            class="icon ion-md-time"></i>{{ place.creation_date|timesince }}</span></small>
                             </div>
                         </div>
                         <!--/ media -->
@@ -86,7 +90,8 @@
                             <li><a href="#"><img
                                         src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/2.jpg"
                                         class="img-fluid rounded-circle" alt="User"></a></li>
-                            <li><a><span class="joined_{{ place.id }}">{{ place.num_joins }}</span> following {{place.name}}</a></li>
+                            <li><a><span class="joined_{{ place.id }}">{{ place.followers }} </span><span
+                                        class="ml-0">following {{place.name}}</span></a></li>
                         </ul>
                     </div>
                     <!--/ cardbox-base -->
@@ -94,7 +99,9 @@
 
                         <ul>
                             {% if place.owner.id != user.id%}
-                            <div class="follow_btn follow_btn_{{place.id}}" onclick="javascript:follow('{{ place.id }}')">{% if place.i_follow > 0 %} Unfollow{% else %}Follow{% endif %}</div>
+                            <div class="follow_btn follow_btn_{{place.id}}"
+                                onclick="javascript:follow('{{ place.id }}')">{% if place.i_follow > 0 %}
+                                Unfollow{% else %}Follow{% endif %}</div>
                             {% endif %}
 
                         </ul>
@@ -146,15 +153,19 @@
                             <div class="d-flex mr-3">
                                 <a href="">
                                     {% if place.owner.avatar %}
-                                    <img class="img-fluid rounded-circle" src="{{ place.owner.avatar.url }}" alt="User"></a>
-                                    {% else %}
-                                    <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}" alt="Image">
-                                    {% endif %}
+                                    <img class="img-fluid rounded-circle" src="{{ place.owner.avatar.url }}"
+                                        alt="User"></a>
+                                {% else %}
+                                <img class="img-fluid rounded-circle" src="{% static 'users/images/default.jpg' %}"
+                                    alt="Image">
+                                {% endif %}
                             </div>
                             <div class="media-body">
                                 <p class="m-0">{{place.owner.get_full_name}} - {{place.owner.id}}</p>
-                                <small><span><i class="icon ion-md-pin"></i> Nairobi, Kenya - Petition {{place.id}}</span></small>
-                                <small><span><i class="icon ion-md-time"></i>{{ place.creation_date|timesince }}</span></small>
+                                <small><span><i class="icon ion-md-pin"></i> Nairobi, Kenya - Petition
+                                        {{place.id}}</span></small>
+                                <small><span><i
+                                            class="icon ion-md-time"></i>{{ place.creation_date|timesince }}</span></small>
                             </div>
                         </div>
                         <!--/ media -->
@@ -194,7 +205,8 @@
                             <li><a href="#"><img
                                         src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/2.jpg"
                                         class="img-fluid rounded-circle" alt="User"></a></li>
-                            <li><a><span class="joined_{{ place.id }}">{{ place.num_joins }}</span> following {{place.name}}</a></li>
+                            <li><a><span class="joined_{{ place.id }}">{{ place.followers }} </span><span
+                                        class="ml-0">following {{place.name}}</span></a></li>
                         </ul>
                     </div>
                     <!--/ cardbox-base -->
@@ -202,7 +214,9 @@
 
                         <ul>
                             {% if place.owner.id != user.id%}
-                            <div class="follow_btn follow_btn_{{place.id}}" onclick="javascript:follow('{{ place.id }}')">{% if place.i_follow > 0 %} Unfollow{% else %}Follow{% endif %}</div>
+                            <div class="follow_btn follow_btn_{{place.id}}"
+                                onclick="javascript:follow('{{ place.id }}')">{% if place.i_follow > 0 %}
+                                Unfollow{% else %}Follow{% endif %}</div>
                             {% endif %}
 
                         </ul>
@@ -244,10 +258,10 @@
             dataType: 'json',
             success: function (data, textStatus, xhr) {
                 if (xhr.status === 201) {
-                    $(".follow_btn_"+place).html("Unfollow");
+                    $(".follow_btn_" + place).html("Unfollow");
                 }
                 else {
-                    $(".follow_btn_"+place).html("Follow");
+                    $(".follow_btn_" + place).html("Follow");
                 }
             }
         });

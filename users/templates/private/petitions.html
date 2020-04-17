@@ -91,7 +91,7 @@
                     {% endif %}
                 </div>
                 <!--/ cardbox-item -->
-                <a href="{% url 'petition' petition.id %}">
+                <a href="{% url 'private_petition' petition.id %}">
                     <div class="cardbox-title">
                         <span class="mb-0">{{ petition.title }}</span>
                         <p class="text-muted">{{ petition.description|truncatewords:25 }}</p>
