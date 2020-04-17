@@ -348,11 +348,17 @@ def private_provider_list(request):
     logger.error('Providers id' + str(following_list))
 
     my_provider_list = Provider.objects.filter(
-        Q(pk__in= following_list) | Q(user=request.user)).order_by('name')
+        Q(pk__in=following_list) | Q(user=request.user)).order_by('name').annotate(i_follow=Count(Case(
+                        When(followingprovider__user__id=request.user.id, then=1)))).annotate(followers=Count("followingprovider"))
 
+    # providers_ids = my_provider_list.values_list('id', flat=True)
     logger.error('Providers full' + str(my_provider_list))
 
-    full_provider_list = Provider.objects.all().order_by('-name')
+    full_provider_list = Provider.objects.exclude(
+        Q(pk__in=following_list) | Q(user=request.user)).order_by('-name').annotate(i_follow=Count(Case(
+                        When(followingprovider__user__id=request.user.id, then=1))))[:8]
+
+
 
     context = {'my_provider_list': my_provider_list,
         'full_provider_list': full_provider_list}
@@ -668,20 +674,17 @@ class FollowingList(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        logger.error('antes serializer  '+json.dumps(request.POST.get("following_to")))
         following = Following.objects.filter(user=request.user,following_to=request.POST.get("following_to"))
         if following:
-            logger.error('Following encontrado')
             following.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             serializer = FollowingSerializer(data=request.data)
             if serializer.is_valid():
-                logger.error('Serializer valido')
                 serializer.save(user=request.user)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
-                logger.error('resultado serializer  '+json.dumps(request.data))
+                return Response(status=status.HTTP_400_BAD_REQUEST)
                 
         
 
@@ -717,12 +720,16 @@ class FollowingPlaceList(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        serializer = FollowingPlaceSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        following = FollowingPlace.objects.filter(user=request.user,place=request.POST.get("place"))
+        if following:
+            following.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            serializer = FollowingPlaceSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class FollowingPlaceDetail(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
@@ -755,12 +762,17 @@ class FollowingProviderList(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        serializer = FollowingProviderSerializer(data=request.data)
+        following = FollowingProvider.objects.filter(user=request.user,provider=request.POST.get("provider"))
+        if following:
+            following.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            serializer = FollowingProviderSerializer(data=request.data)
 
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if serializer.is_valid():
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class FollowingProviderDetail(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,

@@ -81,19 +81,14 @@
                             <li><a href="#"><img
                                         src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/2.jpg"
                                         class="img-fluid rounded-circle" alt="User"></a></li>
-                            <li><a><span class="joined_{{ provider.id }}">{{ provider.num_joins }}</span> following {{provider.name}}</a></li>
+                            <li><a><span class="followed_{{ provider.id }}">{{ provider.followers }} </span><span class="ml-0">following {{provider.name}}</span</a></li>
                         </ul>
                     </div>
                     <!--/ cardbox-base -->
                     <div class="cardbox-comments">
-
-                        <ul>
-
-                                <li class="join btn btn-info" onclick="javascript:leave('{{ provider.id }}')">Unfollow</li>
-
-
-                        </ul>
-
+                            {% if provider.user.id != user.id %}
+                                <div class="follow_btn follow_btn_{{provider.id}}" onclick="javascript:follow('{{ provider.id }}')">{% if provider.i_follow > 0 %} Unfollow{% else %}Follow{% endif %}</div>
+                            {% endif %}
                         <!--/. Search -->
                     </div>
                     <!--/ cardbox-like -->
@@ -189,20 +184,15 @@
                             <li><a href="#"><img
                                         src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/2.jpg"
                                         class="img-fluid rounded-circle" alt="User"></a></li>
-                            <li><a><span class="joined_{{ provider.id }}">{{ provider.num_joins }}</span> following {{provider.name}}</a></li>
+                            <li><a><span class="followed_{{ provider.id }}">{{ provider.followers }} </span><span class="ml-0">following {{provider.name}}</span></a></li>
                         </ul>
                     </div>
                     <!--/ cardbox-base -->
                     <div class="cardbox-comments">
-
-                        <ul>
-                            {% if provider.user.id != user.id%}
-                                <li class="join btn btn-info follow_btn_{{provider.id}}" onclick="javascript:follow('{{ provider.id }}')">Follow</li>
-                                <li class="join btn btn-info unfollow_btn_{{provider.id}}" onclick="javascript:leave('{{ provider.id }}')">Unfollow</li>
-                            {% endif %}
-                        </ul>
-
-                        <!--/. Search -->
+                        {% if provider.user.id != user.id %}
+                            <div class="follow_btn follow_btn_{{provider.id}}" onclick="javascript:follow('{{ provider.id }}')">{% if provider.i_follow > 0 %} Unfollow{% else %}Follow{% endif %}</div>
+                        {% endif %}
+                    <!--/. Search -->
                     </div>
                     <!--/ cardbox-like -->
                 </div>
@@ -224,7 +214,7 @@
 {% block extra_js %}
 <script>
     function follow(provider) {
-        $(".follow_btn_"+provider).hide();
+
         $.ajax({
             url: '{% url "following_provider" %}',
             data: {
@@ -235,10 +225,17 @@
                 xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
             },
             dataType: 'json',
-            success: function (data) {
-                $("span#count-follow").html(parseInt($("span#count-follow").html()) + 1)
-                console.log("Enviado following provider");
-                $(".unfollow_btn_"+provider).removeClass("invisible");
+            success: function (data,  textStatus, xhr) {
+                if (xhr.status === 201) {
+ //                   $("p.follower-count").html(parseInt($("p.follower-count").html())+1)
+                    $(".follow_btn_"+provider).html("Unfollow");
+                }
+                else {
+//                    $("p.follower-count").html(parseInt($("p.follower-count").html())-1)
+                    $(".follow_btn_"+provider).html("Follow");
+                }
+
+
 
             }
         });

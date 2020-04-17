@@ -30,7 +30,7 @@
                     <div class="info_container">
                         <div class="info">
                             <p>followers</p>
-                            <p>{{followers}}</p>
+                            <p class="follower-count">{{followers}}</p>
                         </div>
                         <div class="info">
                             <p>followings</p>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="card-footer">
                     <div class="view_profile">
-                        View profile
+                        Report
                     </div>
                     <div class="message">
                         Message
@@ -76,10 +76,15 @@
             },
             dataType: 'json',
             success: function (data, textStatus, xhr) {
-                if (xhr.status === 201)
+                if (xhr.status === 201) {
+                    $("p.follower-count").html(parseInt($("p.follower-count").html())+1)
                     $(".follow_btn").html("Unfollow");
-                else
+                }
+                else {
+                    $("p.follower-count").html(parseInt($("p.follower-count").html())-1)
                     $(".follow_btn").html("Follow");
+                }
+                    
  
             }
         });
