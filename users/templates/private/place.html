@@ -8,24 +8,25 @@
     <div class="row">
         <div class="col-lg-6 offset-lg-3">
             <div class="card shadow-lg bg-white">
-                <div class="card-header">
-                    <div class="profile_pic">
-                        {% if person.avatar %}
-                        <img class="img-fluid" src="{{ person.avatar.url }}" alt="User">
-                        {% else %}
-                        <img class="img-fluid" src="{% static 'users/images/default.jpg' %}" alt="Image">
-                        {% endif %}
-                    </div>
+                <div class="card-header" 
+                {% if place.place_main_img %}
+                style="background-image: url('{{ place.place_main_img.url}}')" 
+                {% else %}
+                style="background-image: url('{% static "users/images/london.jpg" %}')" 
+                {% endif %}                
+                >
+
                 </div>
                 <div class="card-body">
                     <div class="d-lfex justify-content-center flex-column">
                         <div class="name_container">
-                            <div class="name">{{ person.get_full_name }}</div>
+                            <div class="name">{{ place.name }}</div>
                         </div>
                         <div class="address">Kuala Lumpur, Malaysia</div>
                     </div>
                     <div class="follow">
-                        <div class="follow_btn" >{% if i_follow > 0 %}Unfollow{% else %}Follow{% endif %}</div>
+                        <div class="follow_btn {% if i_follow > 0 %} invisible {% endif %}" >Follow</div>
+                        <div class="unfollow_btn {% if i_follow == 0 %} invisible {% endif %}">Unfollow</div>
                     </div>
                     <div class="info_container">
                         <div class="info">
@@ -33,16 +34,8 @@
                             <p>{{followers}}</p>
                         </div>
                         <div class="info">
-                            <p>followings</p>
-                            <p>{{following}}</p>
-                        </div>
-                        <div class="info">
                             <p>petitions</p>
                             <p>{{petitions_original}}</p>
-                        </div>
-                        <div class="info">
-                            <p>joins</p>
-                            <p>{{petitions_joins}}</p>
                         </div>
                     </div>
                 </div>
@@ -66,30 +59,28 @@
     function follow() {
 
         $.ajax({
-            url: '{% url "following" %}',
+            url: '{% url "following_place" %}',
             data: {
-                'following_to': '{{ person.id }}'
+                'following_to': '{{ place.id }}'
             },
             type: "POST",
             beforeSend: function (xhr, settings) {
                 xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
             },
             dataType: 'json',
-            success: function (data, textStatus, xhr) {
-                if (xhr.status === 201)
-                    $(".follow_btn").html("Unfollow");
-                else
-                    $(".follow_btn").html("Follow");
- 
+            success: function (data) {
+                $(".follow_btn").html("Unfollow")
+                console.log("Enviado following");
+                if (data.is_taken) {
+                }
             }
         });
     }
 
     $('.follow_btn').click(function () {
         follow();
-        //$('.follow_btn').off();
+        $('.follow_btn').off();
     });
-
 
 </script>
 {% endblock extra_js %}

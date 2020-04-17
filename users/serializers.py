@@ -2,7 +2,9 @@ from .models import Petition, ResponsePetition, Provider, Offer, Applause, Follo
 from rest_framework import serializers
 from django.db import IntegrityError
 
-
+import logging
+import json
+logger = logging.getLogger(__name__)
 
 
 class PetitionSerializer(serializers.ModelSerializer):
@@ -56,10 +58,13 @@ class FollowingSerializer(serializers.ModelSerializer):
         read_only_fields = ['user']
     def create(self, validated_data):
         try:
+            logger.error('creando  ')
             request = Following.objects.create(**validated_data)
+            logger.error('creado  ')
             return request
-        except IntegrityError as e: 
-            return "error"
+        except IntegrityError as e:
+            logger.error('Erroraco')
+            raise serializers.ValidationError("duplicated")
 
 
 class FollowingPlaceSerializer(serializers.ModelSerializer):

@@ -237,6 +237,18 @@ def private_place_list(request):
     return render(request, 'private/places.html', context) 
 
 
+#
+# User - people list
+#
+@login_required(redirect_field_name='account_login')
+def private_place(request,pk): 
+    place = get_object_or_404(Place, pk=pk)
+    followers = FollowingPlace.objects.filter(place=place).count()
+    i_follow = FollowingPlace.objects.filter(user=request.user, place=place).count()
+    context = {'place': place,
+                'followers': followers,
+                "i_follow": i_follow}
+    return render(request, 'private/place.html', context) 
 
 
 #######################################################################
@@ -244,7 +256,7 @@ def private_place_list(request):
 #######################################################################
 
 #
-# User - people list
+# User - people detail
 #
 @login_required(redirect_field_name='account_login')
 def private_user(request,pk): 
@@ -347,6 +359,19 @@ def private_provider_list(request):
 
 
     return render(request, 'private/providers.html', context) 
+
+#
+# User - people list
+#
+@login_required(redirect_field_name='account_login')
+def private_provider(request,pk): 
+    provider = get_object_or_404(Provider, pk=pk)
+    followers = FollowingProvider.objects.filter(provider=provider).count()
+    i_follow = FollowingProvider.objects.filter(user=request.user, provider=provider).count()
+    context = {'provider': provider,
+                'followers': followers,
+                "i_follow": i_follow}
+    return render(request, 'private/provider.html', context) 
 
 #
 # List - Ajax 
@@ -643,11 +668,23 @@ class FollowingList(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        serializer = FollowingSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        logger.error('antes serializer  '+json.dumps(request.POST.get("following_to")))
+        following = Following.objects.filter(user=request.user,following_to=request.POST.get("following_to"))
+        if following:
+            logger.error('Following encontrado')
+            following.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            serializer = FollowingSerializer(data=request.data)
+            if serializer.is_valid():
+                logger.error('Serializer valido')
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                logger.error('resultado serializer  '+json.dumps(request.data))
+                
+        
+
 
 class FollowingDetail(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,

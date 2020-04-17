@@ -42,7 +42,7 @@
 
                             
                                 {% if petition.provider %}
-                                    <a href="{% url 'private_place_list' %}">
+                                    <a href="{% url 'private_provider' petition.provider.id %}">
                                         {% if petition.provider.provider_main_image%}
                                         <img class="img-fluid rounded-circle" src="{{ petition.provider.provider_main_image.url  }}" alt="User">
                                         {% else %}
