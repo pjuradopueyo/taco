@@ -1,4 +1,4 @@
-from .models import Petition, ResponsePetition, Provider, Offer, Applause, Following, FollowingPlace, FollowingProvider    
+from .models import Petition, ResponsePetition, Provider, Place, Offer, Applause, Following, FollowingPlace, FollowingProvider    
 from rest_framework import serializers
 from django.db import IntegrityError
 
@@ -46,6 +46,17 @@ class ProviderSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Provider
+        fields = "__all__"
+    def create(self, validated_data):
+        request = Provider.objects.create(**validated_data)
+        return request
+
+class PlaceSerializer(serializers.ModelSerializer):
+    i_follow = serializers.IntegerField()
+    followers = serializers.IntegerField()
+    
+    class Meta:
+        model = Place
         fields = "__all__"
     def create(self, validated_data):
         request = Provider.objects.create(**validated_data)

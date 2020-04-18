@@ -11,6 +11,8 @@ urlpatterns = [
     path('petition/list', views.private_petition_list.as_view(), name='api_petition_list'),
     path('providers/', views.ProviderList.as_view()),
     path('providers/<int:pk>/', views.ProviderDetail.as_view()),
+    path('places/', views.PlaceList.as_view()),
+    path('places/<int:pk>/', views.PlaceDetail.as_view()),
     path('offers/', views.PetitionList.as_view()),
     path('offers/<int:pk>', views.PetitionDetail.as_view()),
     path('applauses/', views.ApplauseList.as_view(), name='applauses'),
