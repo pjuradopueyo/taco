@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'rest_auth',
     'rest_auth.registration',
     'users',
+    'api',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -186,6 +187,10 @@ REST_FRAMEWORK = {
 
 REST_USE_JWT = True
 JWT_ALLOW_REFRESH = True
+
+JWT_AUTH = {
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
 
 AUTHENTICATION_BACKENDS = (
 

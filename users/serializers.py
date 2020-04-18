@@ -8,6 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 class PetitionSerializer(serializers.ModelSerializer):
+    num_applauses = serializers.IntegerField()
+    num_joins = serializers.IntegerField()
+    num_offers = serializers.IntegerField()
+    i_joined = serializers.IntegerField()
+    i_clapped = serializers.IntegerField()
+
     class Meta:
         model = Petition
         fields = "__all__"
