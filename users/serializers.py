@@ -41,9 +41,12 @@ class ResponsePetitionSerializer(serializers.ModelSerializer):
         return request
 
 class ProviderSerializer(serializers.ModelSerializer):
+    i_follow = serializers.IntegerField()
+    followers = serializers.IntegerField()
+    
     class Meta:
         model = Provider
-        fields = ['id','user','desription','url','provider_main_img','start_date']
+        fields = "__all__"
     def create(self, validated_data):
         request = Provider.objects.create(**validated_data)
         return request

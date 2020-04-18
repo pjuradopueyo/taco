@@ -9,6 +9,8 @@ urlpatterns = [
     path('petitions/', views.PetitionList.as_view()),
     path('petitions/<int:pk>', views.PetitionDetail.as_view()),
     path('petition/list', views.private_petition_list.as_view(), name='api_petition_list'),
+    path('providers/', views.ProviderList.as_view()),
+    path('providers/<int:pk>/', views.ProviderDetail.as_view()),
     path('offers/', views.PetitionList.as_view()),
     path('offers/<int:pk>', views.PetitionDetail.as_view()),
     path('applauses/', views.ApplauseList.as_view(), name='applauses'),
