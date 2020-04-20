@@ -5,11 +5,16 @@
 {% block content %}
 <div class="row">
     <div class="col-lg-6 offset-lg-3">
-
-        <a class="btn btn-light btn-xl" href="{% url 'petition_add' 'petition' %}">Create a
-            petition</a>&nbsp;&nbsp;<a class="btn btn-light btn-xl" href="{% url 'petition_add' 'offer' %}">Create
-            an offer</a>
-
+        <div class="container">
+            <div class="row">
+                <div class="col-6 btn-petition">
+                    <a class="shadow-lg" href="{% url 'petition_add' 'petition' %}">I need</a>
+                </div>
+                <div class="col-6 btn-petition">
+                    <a class="shadow-lg" href="{% url 'petition_add' 'offer' %}">I offer</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="container feed-content"></div>
@@ -23,13 +28,13 @@
     var init;
     var page = 1;
 
-    $( document ).ready(function() {
+    $(document).ready(function () {
 
         $('[data-toggle="popover"]').popover({
         });
 
 
-        console.log("carga inicial "+page);
+        console.log("carga inicial " + page);
         $.ajax({
             url: '{% url "private_petition_list" %}',
             data: { 'page_size': '12', 'page_number': page },
@@ -39,9 +44,9 @@
             },
             dataType: 'html',
             success: function (data) {
-                
+
                 enableScroll();
-                page=page+1;
+                page = page + 1;
                 console.log("recibida página ");
                 $(".feed-content").append(data);
             }
@@ -59,9 +64,9 @@
             },
             dataType: 'json',
             success: function (data) {
-                
+
                 console.log("Enviado join " + $("span#count-join").html());
-                $("span.joined_"+petition_id).html(parseInt($("span.joined_"+petition_id).html()) + 1)
+                $("span.joined_" + petition_id).html(parseInt($("span.joined_" + petition_id).html()) + 1)
                 if (data.is_taken) {
                     alert("A user with this username already exists.");
                 }
@@ -75,8 +80,8 @@
         var totalTime = parseInt((Date.now() - init) / 1000);
 
         console.log(claps + " - " + totalTime);
-        $('*[data-petition="'+petition_id+'"]').off();
-        $('*[data-petition="'+petition_id+'"]').removeClass("clap");
+        $('*[data-petition="' + petition_id + '"]').off();
+        $('*[data-petition="' + petition_id + '"]').removeClass("clap");
         $.ajax({
             url: '{% url "applauses" %}',
             data: {
@@ -91,16 +96,16 @@
             },
             dataType: 'json',
             success: function (data) {
-                $("span.applause_"+petition_id).html(parseInt($("span.applause_"+petition_id).html()) + 1)
+                $("span.applause_" + petition_id).html(parseInt($("span.applause_" + petition_id).html()) + 1)
             }
         });
     }
 
 
     function enableScroll() {
-        $(window).scroll(function() {
-            if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
-                console.log("Sending page "+page);
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                console.log("Sending page " + page);
                 $.ajax({
                     url: '{% url "private_petition_list" %}',
                     data: { 'page_size': '12', 'page_number': page },
@@ -110,7 +115,7 @@
                     },
                     dataType: 'html',
                     success: function (data) {
-                        if (data=="") {
+                        if (data == "") {
                             $(window).off("scroll");
                             console.log("Página vacia");
                         } else {
@@ -124,7 +129,7 @@
         });
     }
 
-    $(document).on("click", '.clap', function(event) { 
+    $(document).on("click", '.clap', function (event) {
         petition_id = $(this).data("petition");
         clearTimeout(clapTimer);
         if (claps == 1) {

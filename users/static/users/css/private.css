@@ -16,6 +16,31 @@
   }
   
   /* ------------------------------- */
+  /* home
+  ---------------------------------- */
+  .btn-petition {
+    text-align: center;
+  }
+
+  .btn-petition a,
+  .btn-petition button  {
+    border: solid 1px rgb(220, 220, 220);
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: rgba(255, 255, 255, 0.06);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+    line-height: 2;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    color: #212529;
+    margin: 10px auto;
+  }
+
+  /* ------------------------------- */
   /* Cardbox Heading
   ---------------------------------- */
   .cardbox .cardbox-heading {
@@ -435,3 +460,6 @@
     margin-right: 5px;
     font-weight: 600;
   }
+
+
+

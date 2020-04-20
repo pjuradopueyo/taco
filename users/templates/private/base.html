@@ -21,6 +21,9 @@
     <!-- Third party plugin CSS-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"
         rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css"
+        rel="stylesheet" />
+
     <!-- Core theme CSS (includes Bootstrap)-->
     <link rel="stylesheet" type="text/css" href="{% static 'users/css/styles.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'users/css/private.css' %}">
@@ -55,6 +58,8 @@
     </nav>
     <!-- Masthead-->
     {% block content %}{% endblock %}
+    {% block modals %}{% endblock %}
+
 
     <!-- Footer-->
     <footer class="bg-light py-5">
@@ -69,9 +74,11 @@
     <!-- Third party plugin JS-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
-    <!-- Core theme JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.js"></script>
 
-    {% block extra_js %}{% endblock extra_js %}
+    <!-- Core theme JS-->
+    {% block extra_js %}{% endblock %}  
+
 </body>
 
 </html>

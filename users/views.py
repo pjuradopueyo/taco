@@ -208,12 +208,15 @@ def private_petition(request,pk):
 
     petition = Petition.objects.get(pk=pk)
 
-    petition_joins = Petition.objects.filter(added_to_petition=petition).count()
-    applauses = Applause.objects.filter(petition=petition).count()
-    offers = Petition.objects.filter(answer_to_petition=petition).count()
+    petition_joins = Petition.objects.filter(added_to=petition.id).count()
+    applauses = Applause.objects.filter(petition=petition.id).count()
+    offers = Petition.objects.filter(answer_to=petition.id).count()
+
+    petition_list = Petition.objects.filter(added_to=petition.id)[:10]
 
     context = {'petition': petition,
     'petition_joins': petition_joins,
+    'petition_list': petition_list,
     'applauses': applauses,
     'offers': offers}
 
