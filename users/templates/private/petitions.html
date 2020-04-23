@@ -100,25 +100,17 @@
                 <div class="cardbox-base">
                     <ul class="float-right">
                         <li><a><i class="fa fa-comments"></i></a></li>
-                        <li><a><em class="mr-5">Claps <span class="applause_{{petition.id}}">{{ petition.num_applauses}}</span></em></a>
-                        </li>
-                        <li><a><i class="fa fa-share-alt"></i></a></li>
-                        <li><a><em class="mr-3">Offers <span>{{ petition.num_offers}}</span></em></a></li>
+                        <li><a><span>Claps </span><span class="applause_{{petition.id}}">{{ petition.num_applauses}}</span></a></li>
                     </ul>
                     <ul>
                         <li><a><i class="fa fa-thumbs-up"></i></a></li>
-                        <li><a href="#"><img
-                                    src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/3.jpeg"
-                                    class="img-fluid rounded-circle" alt="User"></a></li>
-                        <li><a href="#"><img
-                                    src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/1.jpg"
-                                    class="img-fluid rounded-circle" alt="User"></a></li>
-                        <li><a href="#"><img
-                                    src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/5.jpg"
-                                    class="img-fluid rounded-circle" alt="User"></a></li>
-                        <li><a href="#"><img
-                                    src="http://www.themashabrand.com/templates/bootsnipp/post/assets/img/users/2.jpg"
-                                    class="img-fluid rounded-circle" alt="User"></a></li>
+                        {% for joined in petition.added_to_petition.all %}
+                        {% if joined %}
+                            <li><a href="#">
+                                <img class="img-fluid rounded-circle" src="{{ joined }}" alt="Image">
+                            </a></li>
+                        {% endif %}
+                        {% endfor %}
                         <li><a><span class="joined_{{ petition.id }}">{{ petition.num_joins }}</span><span class="ml-0"> joined {{petition.user.first_name}}</span></a></li>
                     </ul>
                 </div>

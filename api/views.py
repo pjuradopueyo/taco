@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.core import serializers
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Case, When, IntegerField
+from django.db.models import Count, Case, When, IntegerField, OuterRef, Subquery
 from django.template.loader import render_to_string
 from rest_framework import viewsets
 from rest_framework import permissions, authentication
@@ -61,6 +61,8 @@ class private_petition_list(APIView):
         following_list_provider = FollowingProvider.objects.filter(
             user=request.user).values_list(
                 'provider', flat=True).order_by('pk')
+
+        latest_joins = Petition.objects.filter(added_to=OuterRef('pk')).order_by('-start_date')
 
         petition_full_list = Petition.objects.filter(
             Q(user__in= following_list) | Q(place__in= following_list_place) | Q(provider__in= following_list_provider) | Q(user=request.user)).prefetch_related('added_to_petition').annotate(

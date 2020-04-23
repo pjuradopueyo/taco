@@ -90,7 +90,7 @@ class Petition(models.Model):
     class Meta:
         ordering = ['start_date']
     def __str__(self):
-        return '%s' % (self.petition_img)
+        return 'media/%s' % (self.user.avatar) #Merezco ser azotado por esto
 
 class Offer(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
