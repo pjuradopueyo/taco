@@ -7,11 +7,11 @@
 <div class="container">
 
     <div class="row">
-        <div class="col-lg-6 offset-lg-3">
-
-            <a class="btn btn-light btn-xl" href="{% url 'place_add' %}">Add a place</a>&nbsp;&nbsp;
+        <div class="col-lg-6 offset-lg-3 text-center btn-petition">
+                <a class="shadow-lg" href="{% url 'place_add' %}">Create a place!</a>
         </div>
     </div>
+
     {% if my_place_list %}
     <div class="row">
         {% for place in my_place_list %}

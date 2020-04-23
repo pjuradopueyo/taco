@@ -13,6 +13,7 @@ class PetitionSerializer(serializers.ModelSerializer):
     num_offers = serializers.IntegerField()
     i_joined = serializers.IntegerField()
     i_clapped = serializers.IntegerField()
+    added_to_petition = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Petition

@@ -89,6 +89,8 @@ class Petition(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
     class Meta:
         ordering = ['start_date']
+    def __str__(self):
+        return '%s' % (self.petition_img)
 
 class Offer(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

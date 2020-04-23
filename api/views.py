@@ -63,7 +63,7 @@ class private_petition_list(APIView):
                 'provider', flat=True).order_by('pk')
 
         petition_full_list = Petition.objects.filter(
-            Q(user__in= following_list) | Q(place__in= following_list_place) | Q(provider__in= following_list_provider) | Q(user=request.user)).annotate(
+            Q(user__in= following_list) | Q(place__in= following_list_place) | Q(provider__in= following_list_provider) | Q(user=request.user)).prefetch_related('added_to_petition').annotate(
                 num_joins=Count('added_to_petition')).annotate(
                     num_offers=Count('answer_to_petition')).annotate(
                         num_applauses=Count('applause')).annotate( i_joined=Count(Case(

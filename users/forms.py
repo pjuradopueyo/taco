@@ -75,7 +75,6 @@ class PetitionNewForm(PetitionForm):
         y = self.cleaned_data.get('y')
         w = self.cleaned_data.get('width')
         h = self.cleaned_data.get('height')
-        logger.error('Getting cropped x' + str(x) + ', y ' + str(y)+ ', w ' + str(w)+ ', h ' + str(h))
         if petition.petition_img:
             image = Image.open(petition.petition_img)
             cropped_image = image.crop((x, y, w+x, h+y))
@@ -102,20 +101,35 @@ class TacoSignupForm(SignupForm):
 
 class PlaceForm(forms.ModelForm): 
   
+    x = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    y = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    width = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    height = forms.FloatField(widget=forms.HiddenInput(),required=False)
+
     class Meta: 
         model = Place 
-        fields = "__all__"
+        fields = ('name','description','place_main_img', 'x', 'y', 'width', 'height', )
         exclude = ['owner']
 
     def __init__(self, *args, **kwargs):
         super(PlaceForm, self).__init__(*args, **kwargs)
+        for fieldname, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control'
+            })
+        self.fields['description'].label = "Add a description (optional)"
+        self.fields['place_main_img'].label = "Add an image (optional)"
 
     def save(self):
-        place = super(PlaceForm, self).save()
+        place = super(Place, self).save()
+        x = self.cleaned_data.get('x')
+        y = self.cleaned_data.get('y')
+        w = self.cleaned_data.get('width')
+        h = self.cleaned_data.get('height')
         if place.place_main_img:
             image = Image.open(place.place_main_img)
-            cropped_image = image.crop((0, 0, 650, 350))
-            resized_image = cropped_image.resize((650, 350), Image.ANTIALIAS)
+            cropped_image = image.crop((x, y, w+x, h+y))
+            resized_image = cropped_image.resize((850, 550), Image.ANTIALIAS)
             resized_image.save(place.place_main_img.path)
         return place
 
