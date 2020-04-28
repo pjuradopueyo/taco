@@ -14,6 +14,12 @@ class PetitionSerializer(serializers.ModelSerializer):
     i_joined = serializers.IntegerField()
     i_clapped = serializers.IntegerField()
     added_to_petition = serializers.StringRelatedField(many=True)
+    distance = serializers.SerializerMethodField()
+
+    def get_distance(self, obj):
+
+        return obj.distance.km
+
 
     class Meta:
         model = Petition
@@ -55,7 +61,9 @@ class ProviderSerializer(serializers.ModelSerializer):
 class PlaceSerializer(serializers.ModelSerializer):
     i_follow = serializers.IntegerField()
     followers = serializers.IntegerField()
-    
+    distance = serializers.DecimalField(max_digits=9, decimal_places=6)
+    logger.error('Distance en serializer  '+str(distance))
+
     class Meta:
         model = Place
         fields = "__all__"

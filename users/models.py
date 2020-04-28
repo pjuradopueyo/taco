@@ -1,4 +1,4 @@
-from django.db import models
+from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from datetime import datetime  
@@ -42,8 +42,7 @@ class Place(models.Model):
     slug = models.CharField(max_length=500)
     visibility = models.CharField(max_length=25,default="public")
     description = models.TextField(null=True, blank=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    location = models.PointField(geography=True, null=True, blank=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, blank=True)
     town = models.CharField(max_length=500, null=True, blank=True)
     street = models.CharField(max_length=500, null=True, blank=True)

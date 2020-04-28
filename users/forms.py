@@ -11,17 +11,35 @@ logger = logging.getLogger(__name__)
 
 class CustomUserForm(forms.ModelForm): 
   
+    x = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    y = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    width = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    height = forms.FloatField(widget=forms.HiddenInput(),required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(CustomUserForm, self).__init__(*args, **kwargs)
+        for fieldname, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control'
+            })
 
     class Meta: 
         model = CustomUser 
-        fields = ['first_name', 'last_name', 'alias', 'avatar'] 
+        fields = ['first_name', 'last_name', 'alias', 'avatar', 'x', 'y', 'width', 'height',] 
 
     def save(self):
         user = super(CustomUserForm, self).save()
-        image = Image.open(user.avatar)
-        cropped_image = image.crop((0, 0, 300, 300))
-        resized_image = cropped_image.resize((300, 300), Image.ANTIALIAS)
-        resized_image.save(user.avatar.path)
+        x = self.cleaned_data.get('x')
+        y = self.cleaned_data.get('y')
+        w = self.cleaned_data.get('width')
+        h = self.cleaned_data.get('height')
+
+        if user.avatar:
+            image = Image.open(user.avatar)
+            cropped_image = image.crop((x, y, w+x, h+y))
+            resized_image = cropped_image.resize((600, 600), Image.ANTIALIAS)
+            resized_image.save(user.avatar.path)
+        return user
 
 
 
@@ -108,7 +126,7 @@ class PlaceForm(forms.ModelForm):
 
     class Meta: 
         model = Place 
-        fields = ('name','description','place_main_img', 'x', 'y', 'width', 'height', )
+        fields = ('name','description','place_main_img', 'x', 'y', 'width', 'height', 'location')
         exclude = ['owner']
 
     def __init__(self, *args, **kwargs):

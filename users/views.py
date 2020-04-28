@@ -20,6 +20,9 @@ from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Case, When, IntegerField
+from django.contrib.gis.geos import fromstr
+from django.contrib.gis.geos import Point
+from django.contrib.gis.db.models.functions import Distance
 from django.template.loader import render_to_string
 
 
@@ -268,10 +271,15 @@ def private_place_list(request):
             'place', flat=True).order_by('pk')
 
     logger.error('Places id ' + str(following_list))
+    longitude = -87.42906249999996
+    latitude = 35.4606699514953
+    user_location = Point(longitude, latitude, srid=4326)
 
     my_place_list = Place.objects.filter(
         Q(pk__in=following_list) | Q(owner=request.user)).order_by('owner').annotate(i_follow=Count(Case(
-                        When(followingplace__user__id=request.user.id, then=1)))).annotate(followers=Count("followingplace"))
+                        When(followingplace__user__id=request.user.id, then=1)))).annotate(
+                            followers=Count("followingplace")).annotate(
+                                distance=Distance('location',user_location)).order_by('distance')
 
     # providers_ids = my_provider_list.values_list('id', flat=True)
     logger.error('Place mine ' + str(my_place_list))
@@ -282,6 +290,7 @@ def private_place_list(request):
 
     logger.error('Place full ' + str(full_place_list))
 
+    
     context = {'my_place_list': my_place_list,
         'full_place_list': full_place_list}
 
@@ -366,7 +375,9 @@ def my_account(request):
     if request.method == 'POST': 
         
         if request.user.is_authenticated:
-            form = CustomUserForm(request.POST or None, request.FILES,instance=user) 
+            form = CustomUserForm(request.POST or None, request.FILES,initial={'first_name': request.user.last_name,
+            'first_name': request.user.last_name,
+            'alias': request.user.alias}, instance=user) 
             if form.is_valid(): 
                 form.save() 
                 return redirect('my_account') 

@@ -7,6 +7,7 @@ from django.core import serializers
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Case, When, IntegerField, OuterRef, Subquery
+from django.contrib.gis.db.models.functions import Distance
 from django.template.loader import render_to_string
 from rest_framework import viewsets
 from rest_framework import permissions, authentication
@@ -23,6 +24,8 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from users.serializers import PetitionSerializer, ResponsePetitionSerializer, PlaceSerializer, ProviderSerializer, OfferSerializer, ApplauseSerializer, FollowingSerializer, FollowingPlaceSerializer, FollowingProviderSerializer
 from users.models import Petition, ResponsePetition, Provider, FollowingProvider, Offer, Applause, Following, CustomUser, FollowingPlace, Place, Following
 from users.forms import ProviderForm, PetitionForm, PetitionNewForm, CustomUserForm, PlaceForm
+from django.contrib.gis.geos import Point
+from django.contrib.gis.db.models.functions import Distance
 
 
 import json
@@ -64,6 +67,10 @@ class private_petition_list(APIView):
 
         latest_joins = Petition.objects.filter(added_to=OuterRef('pk')).order_by('-start_date')
 
+        longitude = -87.42906249999996
+        latitude = 35.4606699514953
+        user_location = Point(longitude, latitude, srid=4326)
+        
         petition_full_list = Petition.objects.filter(
             Q(user__in= following_list) | Q(place__in= following_list_place) | Q(provider__in= following_list_provider) | Q(user=request.user)).prefetch_related('added_to_petition').annotate(
                 num_joins=Count('added_to_petition')).annotate(
@@ -74,7 +81,8 @@ class private_petition_list(APIView):
                             ))).annotate( i_clapped=Count(Case(
                             When(applause__user__id=request.user.id, then=1),
                             output_field=IntegerField(),
-                            ))).order_by('-start_date')
+                            ))).annotate(
+                                distance=Distance('place__location',user_location)).order_by('distance').order_by('-start_date')
 
         paginator = Paginator(petition_full_list, page_size) # Show 25 contacts per page
         if int(page_number) > paginator.num_pages:
@@ -281,7 +289,11 @@ class PlaceList(APIView):
     List all petitions, or create a new petition.
     """
     def get(self, request, format=None):
-        places = Place.objects.all()
+        longitude = -80.191788
+        latitude = 25.761681
+        user_location = Point(longitude, latitude, srid=4326)
+
+        places = Place.objects.all().annotate(distance=Distance('location',user_location)).order_by('distance')
         serializer = PlaceSerializer(places, many=True)
         return Response(serializer.data)
 

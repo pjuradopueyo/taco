@@ -18,7 +18,7 @@
                         </button>
                         <div class="dropdown-menu dropdown-scale dropdown-menu-right" role="menu"
                             style="position: absolute; transform: translate3d(-136px, 28px, 0px); top: 0px; left: 0px; will-change: transform;">
-                            {% if petition.i_clapped == 0 %}You clapped!{% endif %}
+
                             <ul>
                                 {% if petition.user.id != user.id%}
                                 {% if petition.i_joined == 0 %}
@@ -70,7 +70,7 @@
                             {% endif %}
                             <small><span><i class="icon ion-md-pin"></i>
                                     {% if petition.place %}
-                                    {{petition.place.name}}
+                                    {{petition.place.name}} - {{petition.distance}}
                                     {% else %}
                                     No location
                                     {% endif %}
@@ -100,17 +100,27 @@
                 <div class="cardbox-base">
                     <ul class="float-right">
                         <li><a><i class="fa fa-comments"></i></a></li>
-                        <li><a><span>Claps </span><span class="applause_{{petition.id}}">{{ petition.num_applauses}}</span></a></li>
+                        <li><a href="#">
+                            <img class="img-fluid rounded-circle" src="{% static 'users/images/clap.png' %}" alt="Image">
+                        </a></li>
+                        <li><a><span class="applause_{{petition.id}}">{{ petition.num_applauses}}</span></a></li>
                     </ul>
                     <ul>
                         <li><a><i class="fa fa-thumbs-up"></i></a></li>
-                        {% for joined in petition.added_to_petition.all %}
-                        {% if joined %}
+                        {% if petition.added_to_petition.all %}
+                            {% for joined in petition.added_to_petition.all %}
+                                {% if joined %}
+                                    <li><a href="#">
+                                        <img class="img-fluid rounded-circle" src="{{ joined }}" alt="Image">
+                                    </a></li>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
                             <li><a href="#">
-                                <img class="img-fluid rounded-circle" src="{{ joined }}" alt="Image">
+                                <img class="img-fluid rounded-circle" src="{% static 'users/images/petition.jpg' %}" alt="Image">
                             </a></li>
+
                         {% endif %}
-                        {% endfor %}
                         <li><a><span class="joined_{{ petition.id }}">{{ petition.num_joins }}</span><span class="ml-0"> joined {{petition.user.first_name}}</span></a></li>
                     </ul>
                 </div>
