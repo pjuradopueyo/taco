@@ -8,6 +8,7 @@
 
     <div class="row">
         <div class="col-lg-6 offset-lg-3 text-center btn-petition">
+            <div id="demo"></div>
                 <a class="shadow-lg" href="{% url 'place_add' %}">Create a place!</a>
         </div>
     </div>
@@ -272,5 +273,22 @@
         $('.follow').off();
     });
 
+
+
+    var x = document.getElementById("demo");
+        function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            x.innerHTML = "Geolocation is not supported by this browser.";
+        }
+        }
+
+        function showPosition(position) {
+        x.innerHTML = "Latitude: " + position.coords.latitude + 
+        "<br>Longitude: " + position.coords.longitude; 
+        }
+        
+        getLocation();
 </script>
 {% endblock extra_js %}

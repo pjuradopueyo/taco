@@ -70,6 +70,7 @@ class PetitionNewForm(PetitionForm):
     y = forms.FloatField(widget=forms.HiddenInput(),required=False)
     width = forms.FloatField(widget=forms.HiddenInput(),required=False)
     height = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    
 
     def __init__(self, *args, **kwargs):
         super(PetitionNewForm, self).__init__(*args, **kwargs)
@@ -82,9 +83,10 @@ class PetitionNewForm(PetitionForm):
 
     class Meta:
         model = Petition
-        fields = ('title','description','petition_img', 'x', 'y', 'width', 'height', )
+        fields = ('title','description','petition_img', 'x', 'y', 'width', 'height', 'petition_type' )
         widgets = {'petition_type': forms.HiddenInput(),
         'answer_to': forms.HiddenInput(),
+        'description' : forms.Textarea(attrs={'rows':4})
         }
         exclude = ['user','place','start_date','finish_date','radio','intensity','added_to','provider','privacy','creation_date','product']
     def save(self):

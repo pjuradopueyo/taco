@@ -161,6 +161,8 @@ def private_petition_list(request):
 
     page_size = request.GET.get('page_size','10')
     page_number = request.GET.get('page_number','1')
+    longitude = request.GET.get('longitude','0')
+    latitude = request.GET.get('latitude','0')
 
     following_list = Following.objects.filter(
         user=request.user).values_list(
@@ -174,7 +176,8 @@ def private_petition_list(request):
         user=request.user).values_list(
             'provider', flat=True).order_by('pk')
 
-    
+    logger.error('Asking for page  ' + str(longitude )+ ' and ' + str(latitude))
+    user_location = Point(float(longitude), float(latitude), srid=4326)
 
     
     petition_full_list = Petition.objects.filter(
@@ -187,7 +190,8 @@ def private_petition_list(request):
                         ))).annotate( i_clapped=Count(Case(
                         When(applause__user__id=request.user.id, then=1),
                         output_field=IntegerField(),
-                        ))).order_by('-start_date')
+                        ))).annotate(
+                                distance=Distance('place__location',user_location)).order_by('-start_date').order_by('distance')
 
     paginator = Paginator(petition_full_list, page_size) # Show 25 contacts per page
     if int(page_number) > paginator.num_pages:

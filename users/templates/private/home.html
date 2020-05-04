@@ -5,13 +5,23 @@
 {% block content %}
 <div class="row">
     <div class="col-lg-6 offset-lg-3">
+        <div class="scrollmenu">
+            <a href="#home">Groceries</a>
+            <a href="#news">Dance</a>
+            <a href="#contact">Fun</a>
+            <a href="#about">Help</a>
+            <a href="#about">Funny</a>
+            <a href="#about">Pizza</a>
+            <a href="#about">Deliveroo</a>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
         <div class="container">
             <div class="row">
-                <div class="col-6 btn-petition">
-                    <a class="shadow-lg" href="{% url 'petition_add' 'petition' %}">I need</a>
-                </div>
-                <div class="col-6 btn-petition">
-                    <a class="shadow-lg" href="{% url 'petition_add' 'offer' %}">I offer</a>
+                <div class="col-12 btn-petition">
+                    <a class="shadow-lg" href="{% url 'petition_add' 'petition' %}">Create a petition</a>
                 </div>
             </div>
         </div>
@@ -27,17 +37,33 @@
     var clapTimer;
     var init;
     var page = 1;
+    var pageSize = 12;
+    var latitude;
+    var longitude;
 
     $(document).ready(function () {
 
         $('[data-toggle="popover"]').popover({
         });
 
+        if (navigator.geolocation) {
+            position = navigator.geolocation.getCurrentPosition(function (position) {
+                latitude = position.coords.latitude;
+                longitude = position.coords.longitude;
+                loadFirstPage();
+            });
+        } else {
+            x.innerHTML = "Geolocation is not supported by this browser.";
+            loadFirstPage();
+        }
 
-        console.log("carga inicial " + page);
+
+    });
+
+    function loadFirstPage() {
         $.ajax({
             url: '{% url "private_petition_list" %}',
-            data: { 'page_size': '12', 'page_number': page },
+            data: { 'page_size': pageSize, 'page_number': page, 'latitude': latitude, 'longitude': longitude },
             type: "GET",
             beforeSend: function (xhr, settings) {
                 xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
@@ -51,8 +77,7 @@
                 $(".feed-content").append(data);
             }
         });
-    });
-
+    }
 
     function join(petition_id) {
         $.ajax({
@@ -108,7 +133,7 @@
                 console.log("Sending page " + page);
                 $.ajax({
                     url: '{% url "private_petition_list" %}',
-                    data: { 'page_size': '12', 'page_number': page },
+                    data: { 'page_size': pageSize, 'page_number': page, 'latitude': latitude, 'longitude': longitude },
                     type: "GET",
                     beforeSend: function (xhr, settings) {
                         xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
@@ -168,6 +193,17 @@
         follow();
         $('.follow').off();
     });
+
+
+    function getLocation() {
+
+    }
+
+    function showPosition(position) {
+
+    }
+
+
 
 </script>
 {% endblock extra_js %}

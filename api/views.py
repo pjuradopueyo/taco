@@ -52,6 +52,8 @@ class private_petition_list(APIView):
         """
         page_size = request.GET.get('page_size','10')
         page_number = request.GET.get('page_number','1')
+        longitude = request.GET.get('longitude','0')
+        latitude = request.GET.get('latitude','0')
 
         following_list = Following.objects.filter(
             user=request.user).values_list(
@@ -67,8 +69,7 @@ class private_petition_list(APIView):
 
         latest_joins = Petition.objects.filter(added_to=OuterRef('pk')).order_by('-start_date')
 
-        longitude = -87.42906249999996
-        latitude = 35.4606699514953
+
         user_location = Point(longitude, latitude, srid=4326)
         
         petition_full_list = Petition.objects.filter(

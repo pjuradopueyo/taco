@@ -64,19 +64,24 @@
                         </div>
                         <div class="media-body">
                             {% if petition.provider %}
-                            <p class="m-0">{{petition.provider.name}}</p>
+                            <p class="m-0">{{petition.provider.name}} <small><span><i
+                                class="icon ion-md-time"></i>{{ petition.start_date|timesince }}</span></small></p>
                             {% else %}
-                            <p class="m-0">{{petition.user.get_full_name}}</p>
+                            <p class="m-0">{{petition.user.get_full_name}} <small><span><i
+                                class="icon ion-md-time"></i>{{ petition.start_date|timesince }}</span></small></p>
                             {% endif %}
                             <small><span><i class="icon ion-md-pin"></i>
                                     {% if petition.place %}
-                                    {{petition.place.name}} - {{petition.distance}}
+                                        {% if petition.distance.m > 1000 %}
+                                            {{petition.place.name}} - {{petition.distance.km|stringformat:".1f"}} km
+                                        {% else %}
+                                            {{petition.place.name}} - {{petition.distance.m|stringformat:".0f"}} m
+                                        {% endif%}
                                     {% else %}
                                     No location
                                     {% endif %}
                                 </span></small>
-                            <small><span><i
-                                        class="icon ion-md-time"></i>{{ petition.start_date|timesince }}</span></small>
+                            
                         </div>
                     </div>
                     <!--/ media -->
@@ -125,10 +130,15 @@
                     </ul>
                 </div>
                 <!--/ cardbox-base -->
-                {% if petition.petition_type == 'offer' %}
-                <div class="offer-indicator">Offer</div>
-                {% endif %}
+
                 <div class="cardbox-comments">
+                    <div class="petition-type">
+                        {% if petition.petition_type == 'offer' %}
+                        <div class="indicator-offer">Offer</div>
+                        {% elif petition.petition_type == 'help' %}
+                        <div class="indicator-help">Help</div>
+                        {% endif %}                        
+                    </div>
                     <!--/. Search -->
                 </div>
                 <!--/ cardbox-like -->
