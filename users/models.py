@@ -21,6 +21,17 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.email
 
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.name
+
+class Tag(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name
+
 class Country(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
@@ -53,7 +64,8 @@ class Place(models.Model):
     door_name = models.CharField(max_length=16, null=True, blank=True)
     place_main_img = models.ImageField(upload_to='images/',null=True, blank=True)
     creation_date = models.DateTimeField(default=datetime.now, blank=True)
-
+    def __str__(self):
+        return self.name
 
 class Provider(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -86,6 +98,7 @@ class Petition(models.Model):
     answer_to = models.ForeignKey('self', related_name='answer_to_petition', on_delete=models.CASCADE, null=True, blank=True)
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
+    tags = models.ManyToManyField(Tag)
     class Meta:
         ordering = ['start_date']
     def __str__(self):
@@ -105,37 +118,12 @@ class Offer(models.Model):
     added_to = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-    def __str__(self):
-        return self.name
-
-class Tag(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    def __str__(self):
-        return self.name +' - '+ self.category.name
-
 class ResponsePetition(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     content = models.CharField(max_length=500)
     petition = models.ForeignKey(Petition, on_delete=models.CASCADE)
     start_date = models.DateTimeField(default=datetime.now, blank=True)
 
-
-
-class TagPetition(models.Model):
-    petition = models.ForeignKey(Petition, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-
-class TagOffer(models.Model):
-    offer = models.ForeignKey(Offer, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-
-
-class TagProvider(models.Model):
-    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
 class Coupon(models.Model):
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)

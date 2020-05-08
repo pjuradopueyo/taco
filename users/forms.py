@@ -70,7 +70,7 @@ class PetitionNewForm(PetitionForm):
     y = forms.FloatField(widget=forms.HiddenInput(),required=False)
     width = forms.FloatField(widget=forms.HiddenInput(),required=False)
     height = forms.FloatField(widget=forms.HiddenInput(),required=False)
-    
+
 
     def __init__(self, *args, **kwargs):
         super(PetitionNewForm, self).__init__(*args, **kwargs)
@@ -100,6 +100,45 @@ class PetitionNewForm(PetitionForm):
             cropped_image = image.crop((x, y, w+x, h+y))
             resized_image = cropped_image.resize((850, 550), Image.ANTIALIAS)
             resized_image.save(petition.petition_img.path)
+        return petition
+
+
+class PetitionNewDetailsForm(PetitionForm):
+    x = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    y = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    width = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    height = forms.FloatField(widget=forms.HiddenInput(),required=False)
+    tags = forms.ModelMultipleChoiceField(queryset=Tag.objects.all())
+    place = forms.ModelChoiceField(queryset=Place.objects.only('name').all(),empty_label=None)
+    
+
+    def __init__(self, *args, **kwargs):
+        super(PetitionNewDetailsForm, self).__init__(*args, **kwargs)
+        for fieldname, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control'
+            })
+        self.fields['tags'].label = "Add a tag"
+
+    class Meta:
+        model = Petition
+        fields = ('tags','place','petition_img', 'x', 'y', 'width', 'height')
+        exclude = ['avatar','user','title','description','start_date','finish_date','radio','intensity','added_to','provider','privacy','creation_date','product']
+    def save(self):
+        petition = super(PetitionNewDetailsForm, self).save()
+        x = self.cleaned_data.get('x')
+        y = self.cleaned_data.get('y')
+        w = self.cleaned_data.get('width')
+        h = self.cleaned_data.get('height')
+        if petition.petition_img and x is not None:
+            image = Image.open(petition.petition_img)
+            cropped_image = image.crop((x, y, w+x, h+y))
+            resized_image = cropped_image.resize((850, 550), Image.ANTIALIAS)
+            resized_image.save(petition.petition_img.path)
+        for field in self.cleaned_data['tags']:
+            logger.error('Getting tags ' + str(field))
+            tag = Tag.objects.get(name=field)
+            petition.tags.add(tag)
         return petition
 
 

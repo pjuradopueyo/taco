@@ -70,7 +70,7 @@ class private_petition_list(APIView):
         latest_joins = Petition.objects.filter(added_to=OuterRef('pk')).order_by('-start_date')
 
 
-        user_location = Point(longitude, latitude, srid=4326)
+        user_location = Point(float(longitude), float(latitude), srid=4326)
         
         petition_full_list = Petition.objects.filter(
             Q(user__in= following_list) | Q(place__in= following_list_place) | Q(provider__in= following_list_provider) | Q(user=request.user)).prefetch_related('added_to_petition').annotate(

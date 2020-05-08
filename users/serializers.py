@@ -8,18 +8,19 @@ logger = logging.getLogger(__name__)
 
 
 class PetitionSerializer(serializers.ModelSerializer):
-    num_applauses = serializers.IntegerField()
-    num_joins = serializers.IntegerField()
-    num_offers = serializers.IntegerField()
-    i_joined = serializers.IntegerField()
-    i_clapped = serializers.IntegerField()
-    added_to_petition = serializers.StringRelatedField(many=True)
-    distance = serializers.SerializerMethodField()
+    num_applauses = serializers.IntegerField(required=False)
+    num_joins = serializers.IntegerField(required=False)
+    num_offers = serializers.IntegerField(required=False)
+    i_joined = serializers.IntegerField(required=False)
+    i_clapped = serializers.IntegerField(required=False)
+    added_to_petition = serializers.StringRelatedField(required=False, many=True)
+    distance = serializers.SerializerMethodField(required=False)
 
     def get_distance(self, obj):
-
-        return obj.distance.km
-
+        try:
+            return obj.distance.km
+        except:
+            return None
 
     class Meta:
         model = Petition
@@ -28,6 +29,11 @@ class PetitionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = Petition.objects.create(**validated_data)
         return request
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        #instance.save()
+        return instance
+        
 
 class OfferSerializer(serializers.ModelSerializer):
     class Meta:

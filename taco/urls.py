@@ -32,6 +32,7 @@ urlpatterns = [
     path('providers/', views.latest_provider_list,name='latest_provider_list'),
     path('petition/<int:petition_id>/', views.petition, name='petition'),
     path('petition/add/<str:petition_type>', views.petition_add, name = 'petition_add'),
+    path('petition/detail/<int:pk>', views.petition_add_detail, name = 'petition_add_detail'),
     path('ajax/petition/join/', views.petition_join, name='petition_join'),
     path('ajax/providers/', views.ajax_provider_list,name='ajax_provider_list'),
     path('admin/', admin.site.urls),

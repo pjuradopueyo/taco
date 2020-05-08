@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Petition, ResponsePetition, Provider, FollowingProvider, Offer, Applause, Following, CustomUser, FollowingPlace, Place, Following
-from .forms import ProviderForm, PetitionForm, PetitionNewForm, CustomUserForm, PlaceForm
+from .forms import ProviderForm, PetitionForm, PetitionNewForm, CustomUserForm, PlaceForm, PetitionNewDetailsForm
 from rest_framework import mixins
 from rest_framework import generics
 # from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
@@ -151,6 +151,32 @@ def petition_add(request,petition_type):
         answer_to=request.GET.get('petition')
         form = PetitionNewForm(initial={'petition_type': petition_type,'answer_to':answer_to}) 
     return render(request, 'private/petition_add.html', {'form' : form}) 
+
+#
+# Petition - Petition
+#
+def petition_add_detail(request,pk): 
+    if request.user.is_authenticated:
+        logger.error('Autenticado en el petition add')
+    else:
+        logger.error('No autenticado')
+
+    petition = Petition.objects.get(pk=pk)
+
+    if request.method == 'POST': 
+ 
+        if request.user.is_authenticated:
+            form = PetitionNewDetailsForm(request.POST, request.FILES, instance=petition) 
+            if form.is_valid(): 
+                result_petition = form.save() 
+                result_petition.user=request.user
+                result_petition.save()
+                return redirect('index') 
+        else:
+            return redirect('account_login') 
+    
+    form = PetitionNewDetailsForm(instance=petition) 
+    return render(request, 'private/petition_add_detail.html', {'form' : form}) 
 
 
 #
