@@ -79,16 +79,15 @@ class PetitionNewForm(PetitionForm):
                 'class': 'form-control'
             })
         self.fields['description'].label = "Add a description (optional)"
-        self.fields['petition_img'].label = "Add an image (optional)"
 
     class Meta:
         model = Petition
-        fields = ('title','description','petition_img', 'x', 'y', 'width', 'height', 'petition_type' )
+        fields = ('title','description', 'x', 'y', 'width', 'height', 'petition_type' )
         widgets = {'petition_type': forms.HiddenInput(),
         'answer_to': forms.HiddenInput(),
         'description' : forms.Textarea(attrs={'rows':4})
         }
-        exclude = ['user','place','start_date','finish_date','radio','intensity','added_to','provider','privacy','creation_date','product']
+        exclude = ['user','petition_img', 'place','start_date','finish_date','radio','intensity','added_to','provider','privacy','creation_date','product']
     def save(self):
         petition = super(PetitionNewForm, self).save()
         x = self.cleaned_data.get('x')
@@ -109,7 +108,7 @@ class PetitionNewDetailsForm(PetitionForm):
     width = forms.FloatField(widget=forms.HiddenInput(),required=False)
     height = forms.FloatField(widget=forms.HiddenInput(),required=False)
     tags = forms.ModelMultipleChoiceField(queryset=Tag.objects.all())
-    place = forms.ModelChoiceField(queryset=Place.objects.only('name').all(),empty_label=None)
+    place = forms.ModelChoiceField(queryset=Place.objects.only('name').all(),empty_label=('Anywhere'))
     
 
     def __init__(self, *args, **kwargs):
@@ -119,7 +118,7 @@ class PetitionNewDetailsForm(PetitionForm):
                 'class': 'form-control'
             })
         self.fields['tags'].label = "Add a tag"
-
+        self.fields['petition_img'].label = "Add an image (optional)"
     class Meta:
         model = Petition
         fields = ('tags','place','petition_img', 'x', 'y', 'width', 'height')

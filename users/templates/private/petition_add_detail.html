@@ -62,9 +62,6 @@
 <script>
     $(document).ready(function () {
 
-      $("#typeSelector").change(function () {
-        this.value === "1" ? $("#id_petition_type").val("help") : (this.value === "3" ? $("#id_petition_type").val("offer") : $("#id_petition_type").val("petition"));
-      });
 
       /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
       $("#id_petition_img").change(function () {
@@ -114,15 +111,11 @@
         $("#id_y").val(cropData["y"]);
         $("#id_height").val(cropData["height"]);
         $("#id_width").val(cropData["width"]);
-        $("form").submit();
+        //$("form").submit();
+        $("#modalCrop").modal("hide");
       });
 
     });
 
-
-    function addItem (item) {
-      var itemHtml =  '<div class="chip chip-md success-color white-text  example z-depth-2 mr-1"><i class="fas fa-tags "></i>&nbsp;&nbsp;'+item+'&nbsp;&nbsp;<i class="close white-text fas fa-times"></i></div>'
-      $(".item-cloud").append(itemHtml);
-    }
   </script>
 {% endblock %}

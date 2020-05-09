@@ -143,7 +143,7 @@ def petition_add(request,petition_type):
                 result_petition = form.save() 
                 result_petition.user=request.user
                 result_petition.save()
-                return redirect('index') 
+                return redirect('petition_add_detail',result_petition.id) 
         else:
             return redirect('account_login') 
 

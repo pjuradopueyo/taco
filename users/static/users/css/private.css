@@ -61,6 +61,21 @@
     background-color: #777;
   }
   
+.filter-box{
+    display:none;
+    float:left;
+    overflow: hidden;
+    background: #F7F7F7;
+}
+
+/* Add padding and border to inner content
+for better animation effect */
+.filter-box-inner{
+    width: 100%;
+    padding: 10px; color:#212529;
+  }
+
+
   /* ------------------------------- */
   /* Cardbox Heading
   ---------------------------------- */
